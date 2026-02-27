@@ -63,6 +63,14 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+        jvmTest.dependencies {
+            implementation(project.dependencies.platform(libs.junit.bom))
+            implementation(project.dependencies.platform(libs.cucumber.bom))
+            implementation(libs.cucumber.java)
+            implementation(libs.cucumber.junit.platform.engine)
+            implementation(libs.junit.platform.suite)
+            runtimeOnly("org.junit.platform:junit-platform-launcher")
+        }
     }
 }
 
@@ -107,4 +115,23 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform {
+        // When running an individual scenario, assume we only want to run
+        // Cucumber
+        System.getProperty("cucumber.features")?.let { includeEngines("cucumber") }
+    }
+
+    // Pass selected system properties to Cucumber
+    System.getProperty("cucumber.features")?.let { systemProperty("cucumber.features", it) }
+    System.getProperty("cucumber.filter.tags")?.let { systemProperty("cucumber.filter.tags", it) }
+    System.getProperty("cucumber.filter.name")?.let { systemProperty("cucumber.filter.name", it) }
+    System.getProperty("cucumber.plugin")?.let { systemProperty("cucumber.plugin", it) }
+
+    // Work around. Gradle does not include enough information to disambiguate
+    // between different examples and scenarios.
+    systemProperty("cucumber.junit-platform.naming-strategy", "long")
+
 }
