@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -44,6 +46,14 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+        }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.ui.test.junit4)
+            implementation(libs.hilt.android.testing)
+            implementation(libs.hilt.android)
+            implementation(libs.cucumber.android)
+            implementation(libs.cucumber.android.hilt)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -88,6 +98,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "com.kentvu.toolbox.test.KentAndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -107,6 +118,7 @@ android {
 
 dependencies {
     debugImplementation(libs.compose.uiTooling)
+    kspAndroidTest(libs.hilt.compiler)
 }
 
 compose.desktop {
@@ -139,3 +151,5 @@ tasks.withType<Test> {
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
 
 }
+
+//dependencies {}
