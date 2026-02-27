@@ -64,9 +64,12 @@ kotlin {
             implementation(libs.kotlinx.coroutinesSwing)
         }
         jvmTest.dependencies {
+            implementation(libs.ui.test.junit4)
+            implementation(libs.ui.test)
             implementation(project.dependencies.platform(libs.junit.bom))
             implementation(project.dependencies.platform(libs.cucumber.bom))
             implementation(libs.cucumber.java)
+            implementation(libs.cucumber.java8)
             implementation(libs.cucumber.junit.platform.engine)
             implementation(libs.junit.platform.suite)
             runtimeOnly("org.junit.platform:junit-platform-launcher")
