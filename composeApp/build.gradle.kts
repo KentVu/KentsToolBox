@@ -70,6 +70,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.cucumber.bom))
             implementation(libs.cucumber.java)
             implementation(libs.cucumber.java8)
+            implementation(libs.cucumber.junit)
             implementation(libs.cucumber.junit.platform.engine)
             implementation(libs.junit.platform.suite)
             runtimeOnly("org.junit.platform:junit-platform-launcher")

@@ -24,6 +24,7 @@ uiTest = "1.10.1"
 [libraries]
 cucumber-bom = { module = "io.cucumber:cucumber-bom", version.ref = "cucumberBom" }
 cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine" }
+cucumber-junit = { module = "io.cucumber:cucumber-junit" }
 cucumber-java = { module = "io.cucumber:cucumber-java" }
 cucumber-java8 = { module = "io.cucumber:cucumber-java8" }
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junitBom" }
