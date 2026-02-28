@@ -14,19 +14,22 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
 
 @DisplayName("Edith has heard about a cool new online to-do app.")
+@ExtendWith(ComposeRuleExtension::class)
 class TodoFunctionalTests {
-    @JvmField
+    /*@JvmField
     @RegisterExtension
-    val extension = ComposeRuleExtension()
+    val extension = ComposeRuleExtension()*/
+    lateinit var runner: ComposeRuleRunner
 
-    @Test
-    fun `She goes to check out its homepage`(/*runner: ComposeRuleRunner*/) = extension.rule.run {
+    @BeforeEach
+    fun `She goes to check out its homepage`(runner: ComposeRuleRunner) = runner.run {
         setContent { App() }
+        this@TodoFunctionalTests.runner = runner
     }
 
     @Test
-    fun `She notices the page title and header mention to-do lists`(): Unit =
-        extension.rule.run {
+    fun `She notices the page title and header mention to-do lists`() =
+        runner.run {
             onNodeWithTag("title").assert(hasText("To-Do"))
         }
 
