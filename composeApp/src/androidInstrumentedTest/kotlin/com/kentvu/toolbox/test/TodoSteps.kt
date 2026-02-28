@@ -37,7 +37,6 @@ class TodoSteps(
             //runTest { launch {} }
         }
         Then("Satisfied, she goes back to sleep") {
-            //browser.quit()
             //quitSignal.resume(Unit) { cause, _, _ -> error("Cancelled!") }
             //scope.launch {}
             //runTest { launch {} }
@@ -59,9 +58,15 @@ class TodoSteps(
         onNodeWithTag("title").assert(hasText("To-Do"))
     }
 
+    @Then("She is invited to enter a to-do item straight away")
+    fun sheIsInvitedToEnterAToDoItemStraightAway() {
+        // Write code here that turns the phrase above into concrete actions
+        throw PendingException("Finish the test!")
+    }
+
     @Then("Satisfied, she goes back to sleep")
     fun satisfiedSheGoesBackToSleep() {
-        // Write code here that turns the phrase above into concrete actions
+        //browser.quit()
         throw PendingException()
     }
 }
