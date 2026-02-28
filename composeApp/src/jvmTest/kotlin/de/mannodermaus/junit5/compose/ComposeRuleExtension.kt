@@ -9,7 +9,7 @@ import org.junit.runner.Description
 //https://github.com/mannodermaus/android-junit-framework/issues/234#issuecomment-950169571
 class ComposeRuleExtension : ParameterResolver {
 
-    private val rule by lazy { createComposeRule() }
+    val rule by lazy { createComposeRule() }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
         return parameterContext.parameter.type == ComposeRuleRunner::class.java
