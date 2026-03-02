@@ -5,8 +5,11 @@ import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import com.kentvu.toolbox.App
 import io.cucumber.java.Before
@@ -24,12 +27,17 @@ class TodoSteps() {
      * [runComposeUiTest], this is the workaround to make Compose UI test work with Cucumber.
      */
     val steps = arrayOf<ComposeUiTest.() -> Unit>(
-        {setContent {
-            App()
-        }},
-        {onNodeWithTag("title").assert(hasText("To-Do"))}
+        {
+            setContent { App() }
+            onRoot().printToLog("DEBUG")
+        },
+        {
+            onNodeWithTag("title")
+                .assert(hasText("To-Do"))
+                .assertIsDisplayed()
+        }
     )
-    val results = Array<Result<Unit>>(steps.size) { Result.success(Unit) }
+    val results = Array(steps.size) { Result.success(Unit) }
 
     @Before
     fun runComposeTestAndCaptureExceptions() {
