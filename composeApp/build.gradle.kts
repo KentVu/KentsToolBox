@@ -79,7 +79,7 @@ kotlin {
             implementation(project.dependencies.platform(libs.junit.bom))
             implementation(project.dependencies.platform(libs.cucumber.bom))
             implementation(libs.cucumber.java)
-            implementation(libs.cucumber.java8)
+            //implementation(libs.cucumber.java8)
             implementation(libs.cucumber.junit)
             implementation(libs.cucumber.junit.platform.engine)
             implementation(libs.junit.platform.suite)
@@ -151,5 +151,3 @@ tasks.withType<Test> {
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
 
 }
-
-//dependencies {}
