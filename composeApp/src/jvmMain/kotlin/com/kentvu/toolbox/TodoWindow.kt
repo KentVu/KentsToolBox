@@ -6,7 +6,7 @@ import androidx.compose.ui.window.Window
 
 class TodoWindow(val onCloseRequest: () -> Unit) {
 
-    val title = "KentsToolbox"
+    val title = "To-Do"
 
     @Composable
     fun content(
