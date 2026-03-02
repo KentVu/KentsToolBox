@@ -1,13 +1,11 @@
 package com.kentvu.toolbox
 
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
 fun main() = application {
-    Window(
+    TodoWindow(
         onCloseRequest = ::exitApplication,
-        title = "KentsToolbox",
-    ) {
+    ).content {
         App()
     }
 }

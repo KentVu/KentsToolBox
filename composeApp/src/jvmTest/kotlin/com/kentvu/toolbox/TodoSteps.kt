@@ -3,38 +3,48 @@ package com.kentvu.toolbox
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isRoot
+import androidx.compose.ui.test.onAncestors
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
-import com.kentvu.toolbox.App
 import io.cucumber.java.Before
 import io.cucumber.java.PendingException
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
+import org.junit.jupiter.api.assertNull
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class TodoSteps() {
 
     //lateinit var compose: ComposeUiTest
     val compose = DesktopComposeUiTest()
+    val todoWindow = TodoWindow({})
+
     /**
      * Because compose testing API won't allow keeping a [ComposeUiTest] instance outside of
      * [runComposeUiTest], this is the workaround to make Compose UI test work with Cucumber.
      */
     val steps = arrayOf<ComposeUiTest.() -> Unit>(
         {
-            setContent { App() }
-            onRoot().printToLog("DEBUG")
+            // While we're in JVM Let's spawn a window
+            setContent { todoWindow.content { App() } }
+            //setContent { App() }
+            //onRoot().printToLog("DEBUG")
         },
         {
-            onNodeWithTag("title")
-                .assert(hasText("To-Do"))
-                .assertIsDisplayed()
+            onNodeWithTag("title").run {
+                assert(hasText("To-Do"))
+                    .assertIsDisplayed()
+                //onAncestors().onLast().printToLog("DEBUG")
+            }
+            assertEquals("To-Do", todoWindow.title)
         }
     )
     val results = Array(steps.size) { Result.success(Unit) }
