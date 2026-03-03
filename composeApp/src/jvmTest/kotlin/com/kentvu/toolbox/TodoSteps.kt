@@ -18,6 +18,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import io.cucumber.java.Before
 import io.cucumber.java.PendingException
+import io.cucumber.java.Scenario
 import io.cucumber.java.en.And
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -55,7 +56,7 @@ class TodoSteps() {
         },
         StepOrder.Three to {
             onNodeWithTag("id_new_item")
-                .assert(hasContentDescription("Placeholder") and hasAnyDescendant(hasText("Enter a to-do item")))
+                .assert(hasAnyDescendant(hasContentDescription("Placeholder") and hasText("Enter a to-do item")))
                 .assertIsDisplayed()
         },
         StepOrder.Four to {
@@ -75,7 +76,7 @@ class TodoSteps() {
     val results = mutableMapOf<StepOrder, Result<Unit>>()
 
     @Before
-    fun runComposeTestAndCaptureExceptions() {
+    fun runComposeTestAndCaptureExceptions(scenario: Scenario) {
         runComposeUiTest {
             steps.forEach { (order, step) ->
                 results[order] = runCatching {

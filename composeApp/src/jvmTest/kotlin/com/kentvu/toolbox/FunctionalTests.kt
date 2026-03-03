@@ -1,0 +1,56 @@
+package com.kentvu.toolbox
+
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyChild
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performKeyPress
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.runComposeUiTest
+import io.cucumber.java.en.And
+import io.cucumber.java.en.Then
+import io.cucumber.java.en.When
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.fail
+
+class FunctionalTests {
+    val todoWindow = TodoWindow({})
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun ableToAddTodo() = runComposeUiTest{
+        //@When("She goes to check out its homepage")
+        setContent { todoWindow.content { App() } }
+        //@Then("She notices the page title and header mention to-do lists")
+        onNodeWithTag("header").run {
+            assert(hasText("To-Do"))
+                .assertIsDisplayed()
+            //onAncestors().onLast().printToLog("DEBUG")
+        }
+        assertEquals("To-Do", todoWindow.title)
+        //@Then("She is invited to enter a to-do item straight away")
+        onNodeWithTag("id_new_item")
+            .assert(hasAnyDescendant(hasContentDescription("Placeholder") and hasText("Enter a to-do item")))
+            .assertIsDisplayed()
+        //@And("She types {string} into a text box")
+        val inputBox = onNodeWithTag("id_new_item")
+        //inputBox.performTextInput("$it")
+        inputBox.performTextInput("Buy peacock feathers")
+        //@When("she hits enter, the page updates")
+        inputBox.performKeyPress(KeyEvent(Key.Enter))
+        //@And("now the page lists {string} as an item in a to-do list")
+        onNodeWithTag("id_list_table")
+            .assert(hasAnyChild(hasText("1: Buy peacock feathers")))
+        //@And("There is still a text box inviting her to add another item.")
+        fail("Finish the test!")
+        //@Then("Satisfied, she goes back to sleep")
+    }
+
+}

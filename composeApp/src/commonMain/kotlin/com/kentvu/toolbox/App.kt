@@ -31,7 +31,7 @@ fun App() {
     MaterialTheme {
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text("To-Do", Modifier.testTag("title")) })
+                TopAppBar(title = { Text("To-Do", Modifier.testTag("header")) })
             },
         ) {
             var showContent by remember { mutableStateOf(false) }
