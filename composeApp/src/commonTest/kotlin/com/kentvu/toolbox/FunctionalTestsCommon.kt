@@ -1,5 +1,6 @@
 package com.kentvu.toolbox
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -13,28 +14,24 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
-import io.cucumber.java.en.And
-import io.cucumber.java.en.Then
-import io.cucumber.java.en.When
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class FunctionalTests {
-    val todoWindow = TodoWindow({})
+abstract class FunctionalTestsCommon {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun ableToAddTodo() = runComposeUiTest{
         //@When("She goes to check out its homepage")
-        setContent { todoWindow.content { App() } }
+        setContent { Content() }
         //@Then("She notices the page title and header mention to-do lists")
         onNodeWithTag("header").run {
             assert(hasText("To-Do"))
                 .assertIsDisplayed()
             //onAncestors().onLast().printToLog("DEBUG")
         }
-        assertEquals("To-Do", todoWindow.title)
+        platformSpecificAssertions()
         //@Then("She is invited to enter a to-do item straight away")
         onNodeWithTag("id_new_item")
             .assert(hasAnyDescendant(hasContentDescription("Placeholder") and hasText("Enter a to-do item")))
@@ -51,6 +48,14 @@ class FunctionalTests {
         //@And("There is still a text box inviting her to add another item.")
         fail("Finish the test!")
         //@Then("Satisfied, she goes back to sleep")
+    }
+
+    protected open fun platformSpecificAssertions() {}
+
+    @Composable
+    protected open fun Content() {
+        App()
+
     }
 
 }

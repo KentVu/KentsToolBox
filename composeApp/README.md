@@ -37,10 +37,38 @@ We shouldn't abuse testTag in Compose production code?
 
 The workaround disables ability to pass parameter to step function :(
 
+"New to-do item did not appear in table"'s error in Compose:
+
+```
+Failed to assert the following: (hasAnyChildThat(Text + InputText + EditableText contains '1: Buy peacock feathers' (ignoreCase: false)))
+Semantics of the node:
+Node #32 at (l=512.0, t=120.0, r=512.0, b=120.0)px, Tag: 'id_list_table'
+Has 2 siblings
+Selector used: (TestTag = 'id_list_table')
+```
+→ Okay maybe we don't need to add further error description as Compose test is pretty specific!
+
+## Chapter 5: Saving User Input: Testing the Database
+
+Let's explore core differences between web app and native app:
+- There are no request/response, (i.e. server), access the database directly (SQLite, Filesystem I/O etc)
+
+> How about abstracting the server using HTTP?, 
+
+→ hmm.. not practical it seems.. Just vanilla API calls are enough!, the important thing is can we
+isolate it in a module!
+
+### Simulating an HTML form's submit
+
+- It blocks until page reload and displays page's updates.
+- It sends data to the serer and re-render what the server returns.
+
+So what the backend should do?:
+- Return data to display the screen.
+- It don't care what the screen will display, that's what Compose's responsibility.
+
+CSRF Token? No need to care because everything is run locally.
+
 ## TODO
 
-- [x] Setup Cucumber
-  - https://www.kodeco.com/26211276-getting-started-with-cucumber
-  - https://github.com/realpacific/cucumber-spring-boot-kotlin/blob/main/build.gradle.kts
-  - https://github.com/cucumber/cucumber-jvm-starter-gradle-java
 - [x] Run the functional test in [Chapter 2](https://www.obeythetestinggoat.com/book/chapter_02_unittest.html).

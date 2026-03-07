@@ -10,7 +10,7 @@ class TodoWindow(val onCloseRequest: () -> Unit) {
 
     @Composable
     fun content(
-        content: @Composable FrameWindowScope.() -> Unit
+        content: @Composable () -> Unit
     ) {
         Window(
             onCloseRequest = onCloseRequest,

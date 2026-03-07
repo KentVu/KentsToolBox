@@ -68,6 +68,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.ui.test)
         }
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -75,7 +76,6 @@ kotlin {
         }
         jvmTest.dependencies {
             implementation(libs.ui.test.junit4)
-            implementation(libs.ui.test)
             implementation(project.dependencies.platform(libs.junit.bom))
             implementation(project.dependencies.platform(libs.cucumber.bom))
             implementation(libs.cucumber.java)
