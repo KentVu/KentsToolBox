@@ -2,13 +2,17 @@ package com.kentvu.toolbox
 
 import com.kentvu.toolbox.models.Item
 
-class Backend {
+interface Backend {
     enum class Action {
         NewItem
     }
 
-    fun post(action: Action, item: Item):Response {
-        return Response(emptyList())
-    }
+    fun post(action: Action, item: Item): Response
 
+    class Default : Backend {
+
+        override fun post(action: Action, item: Item): Response {
+            return Response(emptyList())
+        }
+    }
 }

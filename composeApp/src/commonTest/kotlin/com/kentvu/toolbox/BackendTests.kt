@@ -9,7 +9,7 @@ import kotlin.test.assertEquals
 class BackendTests {
   @Test
   fun test_can_save_a_POST_request() {
-    val backend = Backend()
+    val backend = Backend.Default()
     val response = backend.post(
       Action.NewItem, Item(
         item_text = "A new list item"
