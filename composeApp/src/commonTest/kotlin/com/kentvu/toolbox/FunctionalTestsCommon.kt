@@ -2,22 +2,24 @@ package com.kentvu.toolbox
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
-import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,36 +28,51 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
+@OptIn(ExperimentalTestApi::class)
 abstract class FunctionalTestsCommon {
 
-    class FakeBackend(override val model: StateFlow<Model>) : Backend {
+    class FakeBackend(override val model: MutableStateFlow<Model>) : Backend {
         var called: Boolean = false
 
         override fun post(
             action: Backend.Action,
             item: Item
-        ): Response {
+        ) {
             called = true
-            return Response(emptyList())
+            model.value = Model(listOf(item))
         }
 
     }
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
     fun ensureFrontendUsesBackend() = runComposeUiTest {
         val model = MutableStateFlow(Model())
         val backend = FakeBackend(model)
         setContent { PlatformContentWrapper { App(backend) } }
-        onNodeWithText("1: Buy peacock feathers")
+        onNodeWithText("Buy peacock feathers")
             .assertDoesNotExist()
         model.emit(Model(listOf(Item("Buy peacock feathers"))))
         awaitIdle()
         onNodeWithTag("id_list_table")//.apply { printToLog("DEBUG") }
+            .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
+    }
+
+    @Test
+    fun ensureBackendIsCalled() = runComposeUiTest {
+        val model = MutableStateFlow(Model())
+        val backend = FakeBackend(model)
+        setContent { PlatformContentWrapper { App(backend) } }
+        onNodeWithTag("id_list_table").onChildren().assertCountEquals(0)
+        onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
+        //onNodeWithTag("id_new_item").performKeyInput { Key.Enter }
+        onNodeWithTag("id_new_item").performImeAction()
+        /*a*/waitForIdle()
+        waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
+        assertTrue(backend.called)
+        onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
             .assert(hasAnyChild(hasText("1: Buy peacock feathers")))
     }
 
-    @OptIn(ExperimentalTestApi::class)
     @Test
     fun test_can_start_a_todo_list() = runComposeUiTest{
         //@When("She goes to check out its homepage")

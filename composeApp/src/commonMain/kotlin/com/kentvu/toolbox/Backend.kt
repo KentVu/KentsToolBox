@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
  */
 interface Backend {
     enum class Action {
-        NewItem
+        Add
     }
     val model: StateFlow<Model>
 
-    fun post(action: Action, item: Item): Response
+    fun post(action: Action, item: Item)
 
     class Default : Backend {
         // wait for explicit-backing-property to be stable to simplify this.
@@ -22,8 +22,8 @@ interface Backend {
         override val model: StateFlow<Model>
             get() = _model
 
-        override fun post(action: Action, item: Item): Response {
-            return Response(emptyList())
+        override fun post(action: Action, item: Item) {
+            _model.value = Model(listOf(item))
         }
     }
 }

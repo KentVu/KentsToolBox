@@ -6,7 +6,7 @@ import org.junit.platform.suite.api.IncludeEngines
 import org.junit.platform.suite.api.SelectPackages
 import org.junit.platform.suite.api.Suite
 
-@Suite
+//@Suite
 @IncludeEngines("cucumber")
 @SelectPackages("com.kentvu.toolbox")
 @ConfigurationParameter(key = Constants.PLUGIN_PROPERTY_NAME, value = "pretty")

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,32 +22,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.kentvu.toolbox.models.Item
-import com.kentvu.toolbox.models.Model
 import org.jetbrains.compose.resources.painterResource
 
 import kentstoolbox.composeapp.generated.resources.Res
 import kentstoolbox.composeapp.generated.resources.compose_multiplatform
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
-class PreviewBackend : Backend {
+/*class PreviewBackend : Backend {
     override val model: StateFlow<Model> = MutableStateFlow(Model(listOf(Item("Buy peacock feathers"))))
 
     override fun post(
         action: Backend.Action,
         item: Item
-    ): Response {
-        return Response(emptyList())
+    ) {
     }
 
-}
+}*/
 
 @Composable
 @Preview
 fun App() {
-    App(PreviewBackend())
+    App(Backend.Default())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,15 +65,19 @@ fun App(backend: Backend) {
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                val textFieldState = rememberTextFieldState()
                 TextField(
-                    rememberTextFieldState(),
+                    textFieldState,
                     Modifier.testTag("id_new_item"),
                     placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    onKeyboardAction = { backend.post(Backend.Action.Add, Item("${textFieldState.text}")) },
+                    lineLimits = TextFieldLineLimits.SingleLine,
                 )
                 val model by backend.model.collectAsState()
                 Column(Modifier.testTag("id_list_table")) {
                     model.items.forEachIndexed { index, item ->
-                        Text("${index + 1}: ${item.item_text}")
+                        Text("${index}: ${item.item_text}")
                     }
                 }
                 Button(onClick = { showContent = !showContent }) {

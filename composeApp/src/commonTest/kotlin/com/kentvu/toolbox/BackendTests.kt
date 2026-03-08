@@ -21,7 +21,7 @@ class BackendTests {
         backend.model.toList(models)
     }
     backend.post(
-      Action.NewItem, Item(
+      Action.Add, Item(
         item_text = "A new list item"
       )
     )
