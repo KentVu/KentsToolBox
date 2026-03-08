@@ -22,12 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.kentvu.toolbox.models.Item
+import com.kentvu.toolbox.models.Model
 import org.jetbrains.compose.resources.painterResource
 
 import kentstoolbox.composeapp.generated.resources.Res
 import kentstoolbox.composeapp.generated.resources.compose_multiplatform
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class PreviewBackend : Backend {
+    override val model: StateFlow<Model> = MutableStateFlow(Model(listOf(Item("Buy peacock feathers"))))
+
     override fun post(
         action: Backend.Action,
         item: Item
@@ -66,7 +71,12 @@ fun App(backend: Backend) {
                     Modifier.testTag("id_new_item"),
                     placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
                 )
-                Column(Modifier.testTag("id_list_table")) {  }
+                val model by backend.model.collectAsState()
+                Column(Modifier.testTag("id_list_table")) {
+                    model.items.forEachIndexed { index, item ->
+                        Text("${index + 1}: ${item.item_text}")
+                    }
+                }
                 Button(onClick = { showContent = !showContent }) {
                     Text("Click me!")
                 }

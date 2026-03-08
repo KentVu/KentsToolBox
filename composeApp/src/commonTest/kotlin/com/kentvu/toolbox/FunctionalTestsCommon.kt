@@ -12,18 +12,23 @@ import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performKeyPress
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import com.kentvu.toolbox.models.Item
+import com.kentvu.toolbox.models.Model
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
 abstract class FunctionalTestsCommon {
 
-    class FakeBackend: Backend {
+    class FakeBackend(override val model: StateFlow<Model>) : Backend {
         var called: Boolean = false
 
         override fun post(
@@ -38,9 +43,23 @@ abstract class FunctionalTestsCommon {
 
     @OptIn(ExperimentalTestApi::class)
     @Test
+    fun ensureFrontendUsesBackend() = runComposeUiTest {
+        val model = MutableStateFlow(Model())
+        val backend = FakeBackend(model)
+        setContent { PlatformContentWrapper { App(backend) } }
+        onNodeWithText("1: Buy peacock feathers")
+            .assertDoesNotExist()
+        model.emit(Model(listOf(Item("Buy peacock feathers"))))
+        awaitIdle()
+        onNodeWithTag("id_list_table")//.apply { printToLog("DEBUG") }
+            .assert(hasAnyChild(hasText("1: Buy peacock feathers")))
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
     fun test_can_start_a_todo_list() = runComposeUiTest{
         //@When("She goes to check out its homepage")
-        val backend = FakeBackend()
+        val backend = Backend.Default()
         setContent { PlatformContentWrapper { App(backend) } }
         //@Then("She notices the page title and header mention to-do lists")
         onNodeWithTag("header").run {
@@ -62,7 +81,6 @@ abstract class FunctionalTestsCommon {
         inputBox.performKeyInput { Key.Enter }
         // or try this:
         //inputBox.performImeAction()
-        assertTrue(backend.called, "App() is not using backend!")
         //@And("now the page lists {string} as an item in a to-do list")
         onNodeWithTag("id_list_table")
             .assert(hasAnyChild(hasText("1: Buy peacock feathers"))) {
