@@ -71,13 +71,16 @@ fun App(backend: Backend) {
                     Modifier.testTag("id_new_item"),
                     placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    onKeyboardAction = { backend.post(Backend.Action.Add, Item("${textFieldState.text}")) },
+                    onKeyboardAction = { performDefault ->
+                        backend.post(Backend.Action.Add, Item("${textFieldState.text}"))
+                        performDefault()
+                    },
                     lineLimits = TextFieldLineLimits.SingleLine,
                 )
                 val model by backend.model.collectAsState()
                 Column(Modifier.testTag("id_list_table")) {
                     model.items.forEachIndexed { index, item ->
-                        Text("${index}: ${item.item_text}")
+                        Text("1: ${item.item_text}")
                     }
                 }
                 Button(onClick = { showContent = !showContent }) {

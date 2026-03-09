@@ -74,6 +74,11 @@ CSRF Token? No need to care because everything is run locally.
 Since we are in a strongly typed language Kotlin, the data passed between frontend and backend is also strongly-typed (a.k.a data classes).
 So there's no need for form-data dictionary key check etc.
 
+### Django view.render.template?
+
+That's my `backend.model`!!
+
 ## TODO
 
 - [x] Run the functional test in [Chapter 2](https://www.obeythetestinggoat.com/book/chapter_02_unittest.html).
+- [ ] Focus on id_new_item upon app start.

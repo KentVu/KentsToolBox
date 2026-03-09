@@ -8,7 +8,8 @@ class FunctionalTestsJvm: FunctionalTestsCommon() {
 
     @Composable
     override fun PlatformContentWrapper(block: @Composable () -> Unit) {
-        todoWindow.content(block)
+        super.PlatformContentWrapper(block)
+        //todoWindow.content(block)
     }
 
     override fun platformSpecificAssertions() {

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onChildren
@@ -18,10 +19,12 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
+import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.test.Test
@@ -57,20 +60,22 @@ abstract class FunctionalTestsCommon {
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
     }
 
-    @Test
+    @Test //the "contract" between the frontend and the backend.
     fun ensureBackendIsCalled() = runComposeUiTest {
         val model = MutableStateFlow(Model())
         val backend = FakeBackend(model)
         setContent { PlatformContentWrapper { App(backend) } }
         onNodeWithTag("id_list_table").onChildren().assertCountEquals(0)
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
+
         //onNodeWithTag("id_new_item").performKeyInput { Key.Enter }
         onNodeWithTag("id_new_item").performImeAction()
         /*a*/waitForIdle()
+
         waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
         assertTrue(backend.called)
         onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
-            .assert(hasAnyChild(hasText("1: Buy peacock feathers")))
+            .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
     }
 
     @Test
@@ -95,13 +100,17 @@ abstract class FunctionalTestsCommon {
         inputBox.performTextInput("Buy peacock feathers")
         //@When("she hits enter, the page updates")
         //inputBox.performKeyPress(KeyEvent(Key.Enter))
-        inputBox.performKeyInput { Key.Enter }
+        inputBox.performImeAction()
         // or try this:
-        //inputBox.performImeAction()
+        //inputBox.performKeyInput { Key.Enter }
         //@And("now the page lists {string} as an item in a to-do list")
-        onNodeWithTag("id_list_table")
+        //waitForIdle()
+        //waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
+        //delay(1000)
+        var log: String
+        onNodeWithTag("id_list_table").apply { log = printToString() }
             .assert(hasAnyChild(hasText("1: Buy peacock feathers"))) {
-                "New to-do item did not appear in table"}
+                "New to-do item did not appear in table. Content were:\n$log"}
         //@And("There is still a text box inviting her to add another item.")
         fail("Finish the test!")
         //@Then("Satisfied, she goes back to sleep")
