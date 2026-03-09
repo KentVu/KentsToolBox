@@ -1,4 +1,4 @@
-package com.kentvu.toolbox.test
+package com.kentvu.toolbox.tests
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import io.cucumber.junit.WithJunitRule

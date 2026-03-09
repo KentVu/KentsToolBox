@@ -1,5 +1,6 @@
-package com.kentvu.toolbox
+package com.kentvu.toolbox.tests
 
+import com.kentvu.toolbox.Backend
 import com.kentvu.toolbox.Backend.Action
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model

@@ -1,4 +1,4 @@
-package com.kentvu.toolbox.test
+package com.kentvu.toolbox.tests
 
 import android.app.Application
 import android.content.Context

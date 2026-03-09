@@ -1,4 +1,4 @@
-package com.kentvu.toolbox
+package com.kentvu.toolbox.tests
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

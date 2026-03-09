@@ -1,4 +1,4 @@
-package com.kentvu.toolbox.test
+package com.kentvu.toolbox.tests
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assert
