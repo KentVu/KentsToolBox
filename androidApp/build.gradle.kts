@@ -21,7 +21,6 @@ kotlin {
     implementation(libs.compose.uiToolingPreview)
     // Kotlin multiplatform Variant API does not support addKspConfigurations() yet
     //kspAndroidTest(libs.hilt.compiler)
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.hilt.android)
     androidTestImplementation(libs.cucumber.android)

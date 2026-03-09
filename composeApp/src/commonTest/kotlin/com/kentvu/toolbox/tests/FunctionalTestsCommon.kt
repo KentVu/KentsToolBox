@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 @OptIn(ExperimentalTestApi::class)
-abstract class FunctionalTestsCommon {
+class FunctionalTestsCommon {
 
     class FakeBackend(override val model: MutableStateFlow<Model>) : Backend {
         var called: Boolean = false
@@ -48,7 +48,7 @@ abstract class FunctionalTestsCommon {
     fun ensureFrontendUsesBackend() = runComposeUiTest {
         val model = MutableStateFlow(Model())
         val backend = FakeBackend(model)
-        setContent { PlatformContentWrapper { App(backend) } }
+        setContent { App(backend) }
         onNodeWithText("Buy peacock feathers")
             .assertDoesNotExist()
         model.emit(Model(listOf(Item("Buy peacock feathers"))))
@@ -61,7 +61,7 @@ abstract class FunctionalTestsCommon {
     fun ensureBackendIsCalled() = runComposeUiTest {
         val model = MutableStateFlow(Model())
         val backend = FakeBackend(model)
-        setContent { PlatformContentWrapper { App(backend) } }
+        setContent { App(backend) }
         onNodeWithTag("id_list_table").onChildren().assertCountEquals(0)
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
 
@@ -79,14 +79,13 @@ abstract class FunctionalTestsCommon {
     fun test_can_start_a_todo_list() = runComposeUiTest{
         //@When("She goes to check out its homepage")
         val backend = Backend.Default()
-        setContent { PlatformContentWrapper { App(backend) } }
+        setContent { App(backend) }
         //@Then("She notices the page title and header mention to-do lists")
         onNodeWithTag("header").run {
             assert(hasText("To-Do"))
                 .assertIsDisplayed()
             //onAncestors().onLast().printToLog("DEBUG")
         }
-        platformSpecificAssertions()
         //@Then("She is invited to enter a to-do item straight away")
         onNodeWithTag("id_new_item", true)
             .assert(hasAnyDescendant(hasTestTag("Placeholder") and hasText("Enter a to-do item")))
@@ -111,13 +110,6 @@ abstract class FunctionalTestsCommon {
         //@And("There is still a text box inviting her to add another item.")
         fail("Finish the test!")
         //@Then("Satisfied, she goes back to sleep")
-    }
-
-    protected open fun platformSpecificAssertions() {}
-
-    @Composable
-    protected open fun PlatformContentWrapper(block: @Composable () -> Unit) {
-        block()
     }
 
 }

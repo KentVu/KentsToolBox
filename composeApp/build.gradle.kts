@@ -18,6 +18,9 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+        // Opt-in to enable and configure device-side (instrumented) tests
+        withDeviceTest {
+        }
 
         androidResources {
             enable = true
@@ -52,8 +55,12 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
         }
-        androidInstrumentedTest.dependencies {
-            implementation(libs.androidx.activity.compose)
+        //androidInstrumentedTest.dependencies {}
+        getByName("androidDeviceTest") {
+            dependencies {
+                //implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.ui.test.junit4)
+            }
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
