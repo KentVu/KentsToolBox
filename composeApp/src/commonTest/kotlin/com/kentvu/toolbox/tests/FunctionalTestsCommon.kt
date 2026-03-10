@@ -1,6 +1,6 @@
 package com.kentvu.toolbox.tests
 
-import androidx.compose.runtime.Composable
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
@@ -27,7 +27,6 @@ import com.kentvu.toolbox.models.Model
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import kotlin.test.fail
 
 @OptIn(ExperimentalTestApi::class)
 class FunctionalTestsCommon {
@@ -93,21 +92,14 @@ class FunctionalTestsCommon {
             .assertIsDisplayed()
         //@And("She types {string} into a text box")
         var inputBox = onNodeWithTag("id_new_item")
-        //inputBox.performTextInput("$it")
         inputBox.performTextInput("Buy peacock feathers")
-        //@When("she hits enter, the page updates")
-        //inputBox.performKeyPress(KeyEvent(Key.Enter))
+        // When she hits enter, the page updates, and now the page lists
+        //"1: Buy peacock feathers" as an item in a to-do list table
         inputBox.performImeAction()
         // or try this:
         //inputBox.performKeyInput { Key.Enter }
-        //@And("now the page lists "1: Buy peacock feathers" as an item in a to-do list")
-        //waitForIdle()
-        //waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
         //delay(1000)
-        var log: String
-        onNodeWithTag("id_list_table").apply { log = printToString() }
-            .assert(hasAnyChild(hasText("1: Buy peacock feathers"))) {
-                "New to-do item did not appear in table. Content were:\n$log"}
+        check_for_row_in_list_table("1: Buy peacock feathers")
         //There is still a text box inviting her to add another item.
         //She enters "Use peacock feathers to make a fly"
         // (Edith is very methodical)
@@ -115,11 +107,15 @@ class FunctionalTestsCommon {
         inputBox.performTextInput("Use peacock feathers to make a fly")
         inputBox.performImeAction()
         // The page updates again, and now shows both items on her list
+        check_for_row_in_list_table("2: Use peacock feathers to make a fly")
+        check_for_row_in_list_table("1: Buy peacock feathers")
+        //@Then("Satisfied, she goes back to sleep")
+    }
+
+    private fun ComposeUiTest.check_for_row_in_list_table(row_text: String) {
         onNodeWithTag("id_list_table")
             .onChildren()
-            .assertAny(hasText("2: Use peacock feathers to make a fly"))
-            .assertAny(hasText("1: Buy peacock feathers"))
-        //@Then("Satisfied, she goes back to sleep")
+            .assertAny(hasText(row_text))
     }
 
 }
