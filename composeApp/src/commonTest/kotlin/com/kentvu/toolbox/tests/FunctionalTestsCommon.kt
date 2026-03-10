@@ -3,6 +3,7 @@ package com.kentvu.toolbox.tests
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
@@ -91,7 +92,7 @@ class FunctionalTestsCommon {
             .assert(hasAnyDescendant(hasTestTag("Placeholder") and hasText("Enter a to-do item")))
             .assertIsDisplayed()
         //@And("She types {string} into a text box")
-        val inputBox = onNodeWithTag("id_new_item")
+        var inputBox = onNodeWithTag("id_new_item")
         //inputBox.performTextInput("$it")
         inputBox.performTextInput("Buy peacock feathers")
         //@When("she hits enter, the page updates")
@@ -99,7 +100,7 @@ class FunctionalTestsCommon {
         inputBox.performImeAction()
         // or try this:
         //inputBox.performKeyInput { Key.Enter }
-        //@And("now the page lists {string} as an item in a to-do list")
+        //@And("now the page lists "1: Buy peacock feathers" as an item in a to-do list")
         //waitForIdle()
         //waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
         //delay(1000)
@@ -107,8 +108,17 @@ class FunctionalTestsCommon {
         onNodeWithTag("id_list_table").apply { log = printToString() }
             .assert(hasAnyChild(hasText("1: Buy peacock feathers"))) {
                 "New to-do item did not appear in table. Content were:\n$log"}
-        //@And("There is still a text box inviting her to add another item.")
-        fail("Finish the test!")
+        //There is still a text box inviting her to add another item.
+        //She enters "Use peacock feathers to make a fly"
+        // (Edith is very methodical)
+        inputBox = onNodeWithTag("id_new_item")
+        inputBox.performTextInput("Use peacock feathers to make a fly")
+        inputBox.performImeAction()
+        // The page updates again, and now shows both items on her list
+        onNodeWithTag("id_list_table")
+            .onChildren()
+            .assertAny(hasText("2: Use peacock feathers to make a fly"))
+            .assertAny(hasText("1: Buy peacock feathers"))
         //@Then("Satisfied, she goes back to sleep")
     }
 

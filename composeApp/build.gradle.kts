@@ -49,16 +49,27 @@ kotlin {
         browser()
         binaries.executable()
     }
+    // Default Kotlin Hierarchy Template Not Applied Correctly
+    //The Default Kotlin Hierarchy Template was not applied to 'project ':composeApp'':
+    //Explicit .dependsOn() edges were configured for the following source sets:
+    //[androidDeviceTest]
+    // Apply the default hierarchy again. It'll create, for example, the iosMain source set:
+    applyDefaultHierarchyTemplate()
     
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
         }
+        val commonTest2Android by creating {
+            dependsOn(commonTest.get())
+        }
         //androidInstrumentedTest.dependencies {}
         getByName("androidDeviceTest") {
+            // Make commonTest run on Android also.
+            dependsOn(commonTest2Android)
             dependencies {
-                //implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.ui.test.manifest)
                 implementation(libs.androidx.ui.test.junit4)
             }
         }
