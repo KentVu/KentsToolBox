@@ -71,7 +71,7 @@ CSRF Token? No need to care because everything is run locally.
 
 ### GET and POST?
 
-Since we are in a strongly typed language Kotlin, the data passed between frontend and backend is also strongly-typed (a.k.a data classes).
+Since we are in a strongly typed language Kotlin, the data passed between frontend and backend is also strongly-typed (a.k.a. data classes).
 So there's no need for form-data dictionary key check etc.
 
 ### Django view.render.template?
