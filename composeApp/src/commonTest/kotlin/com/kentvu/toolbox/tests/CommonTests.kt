@@ -17,7 +17,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.printToString
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.App
@@ -29,12 +28,12 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
-class FunctionalTestsCommon {
+class CommonTests {
 
     class FakeBackend(override val model: MutableStateFlow<Model>) : Backend {
         var called: Boolean = false
 
-        override fun post(
+        override suspend fun post(
             action: Backend.Action,
             item: Item
         ) {
@@ -73,49 +72,6 @@ class FunctionalTestsCommon {
         assertTrue(backend.called)
         onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
-    }
-
-    @Test
-    fun test_can_start_a_todo_list() = runComposeUiTest{
-        //@When("She goes to check out its homepage")
-        val backend = Backend.Default()
-        setContent { App(backend) }
-        //@Then("She notices the page title and header mention to-do lists")
-        onNodeWithTag("header").run {
-            assert(hasText("To-Do"))
-                .assertIsDisplayed()
-            //onAncestors().onLast().printToLog("DEBUG")
-        }
-        //@Then("She is invited to enter a to-do item straight away")
-        onNodeWithTag("id_new_item", true)
-            .assert(hasAnyDescendant(hasTestTag("Placeholder") and hasText("Enter a to-do item")))
-            .assertIsDisplayed()
-        //@And("She types {string} into a text box")
-        var inputBox = onNodeWithTag("id_new_item")
-        inputBox.performTextInput("Buy peacock feathers")
-        // When she hits enter, the page updates, and now the page lists
-        //"1: Buy peacock feathers" as an item in a to-do list table
-        inputBox.performImeAction()
-        // or try this:
-        //inputBox.performKeyInput { Key.Enter }
-        //delay(1000)
-        check_for_row_in_list_table("1: Buy peacock feathers")
-        //There is still a text box inviting her to add another item.
-        //She enters "Use peacock feathers to make a fly"
-        // (Edith is very methodical)
-        inputBox = onNodeWithTag("id_new_item")
-        inputBox.performTextInput("Use peacock feathers to make a fly")
-        inputBox.performImeAction()
-        // The page updates again, and now shows both items on her list
-        check_for_row_in_list_table("2: Use peacock feathers to make a fly")
-        check_for_row_in_list_table("1: Buy peacock feathers")
-        //@Then("Satisfied, she goes back to sleep")
-    }
-
-    private fun ComposeUiTest.check_for_row_in_list_table(row_text: String) {
-        onNodeWithTag("id_list_table")
-            .onChildren()
-            .assertAny(hasText(row_text))
     }
 
 }

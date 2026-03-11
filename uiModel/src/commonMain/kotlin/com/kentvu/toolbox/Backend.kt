@@ -14,15 +14,16 @@ interface Backend {
     }
     val model: StateFlow<Model>
 
-    fun post(action: Action, item: Item)
+    /** [item] should be some sort of "Request" type, but I'm trying to keep things simple. */
+    suspend fun post(action: Action, item: Item)
 
-    class Default : Backend {
+    class Preview : Backend {
         // wait for explicit-backing-property to be stable to simplify this.
         private val _model = MutableStateFlow(Model())
         override val model: StateFlow<Model>
             get() = _model
 
-        override fun post(action: Action, item: Item) {
+        override suspend fun post(action: Action, item: Item) {
             _model.value = Model(listOf(item))
         }
     }

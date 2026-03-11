@@ -1,5 +1,6 @@
 package com.kentvu.toolbox.data
 
+import androidx.room.Room
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -8,7 +9,7 @@ import kotlin.test.assertEquals
 class ItemModelRoomTest {
   @Test
   fun test_saving_and_retrieving_items() = runTest {
-    val db = getRoomDatabase(getDatabaseBuilder())
+    val db = getRoomDatabase(Room.inMemoryDatabaseBuilder())
     val dao = db.getDao()
 
     val first_item = Item(text = "The first (ever) list item")

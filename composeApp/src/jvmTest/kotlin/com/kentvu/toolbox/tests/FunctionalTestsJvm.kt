@@ -24,7 +24,7 @@ class FunctionalTestsJvm {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun windowsShouldHaveRightTitle() = runComposeUiTest {
-        setContent { PlatformContentWrapper { App(Backend.Default()) } }
+        setContent { PlatformContentWrapper { App(Backend.Preview()) } }
         platformSpecificAssertions()
     }
 }

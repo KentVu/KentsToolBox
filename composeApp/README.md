@@ -82,3 +82,4 @@ That's my `backend.model`!!
 
 - [x] Run the functional test in [Chapter 2](https://www.obeythetestinggoat.com/book/chapter_02_unittest.html).
 - [ ] Focus on id_new_item upon app start.
+- [ ] Code smell: POST test is too long?

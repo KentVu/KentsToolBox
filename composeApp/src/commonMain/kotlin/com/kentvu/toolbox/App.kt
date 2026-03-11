@@ -29,6 +29,7 @@ import org.jetbrains.compose.resources.painterResource
 
 import kentstoolbox.composeapp.generated.resources.Res
 import kentstoolbox.composeapp.generated.resources.compose_multiplatform
+import kotlinx.coroutines.launch
 
 /*class PreviewBackend : Backend {
     override val model: StateFlow<Model> = MutableStateFlow(Model(listOf(Item("Buy peacock feathers"))))
@@ -44,7 +45,7 @@ import kentstoolbox.composeapp.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    App(Backend.Default())
+    App(Backend.Preview())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,6 +66,7 @@ fun App(backend: Backend) {
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                val scope = rememberCoroutineScope()
                 val textFieldState = rememberTextFieldState()
                 TextField(
                     textFieldState,
@@ -72,15 +74,17 @@ fun App(backend: Backend) {
                     placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     onKeyboardAction = { performDefault ->
-                        backend.post(Backend.Action.Add, Item("${textFieldState.text}"))
-                        performDefault()
+                        scope.launch {
+                            backend.post(Backend.Action.Add, Item("${textFieldState.text}"))
+                            performDefault()
+                        }
                     },
                     lineLimits = TextFieldLineLimits.SingleLine,
                 )
                 val model by backend.model.collectAsState()
                 Column(Modifier.testTag("id_list_table")) {
                     model.items.forEachIndexed { index, item ->
-                        Text("1: ${item.item_text}")
+                        Text("1: ${item.text}")
                     }
                 }
                 Button(onClick = { showContent = !showContent }) {
