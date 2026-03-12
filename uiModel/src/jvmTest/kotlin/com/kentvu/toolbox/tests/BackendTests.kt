@@ -1,6 +1,7 @@
 package com.kentvu.toolbox.tests
 
 import com.kentvu.toolbox.BackendJvm
+import com.kentvu.toolbox.Enviroment
 import com.kentvu.toolbox.models.JvmRoomRepository
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model
@@ -13,12 +14,13 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
+// HomePageTests
 class BackendTests {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun test_can_save_a_POST_request() = runTest {
-    val repo = JvmRoomRepository()
-    val backend = BackendJvm(repo/*,CoroutineScope(currentCoroutineContext())*/)
+    val repo = JvmRoomRepository(Enviroment.Dev)
+    val backend = BackendJvm(repository = repo)
     val models = mutableListOf<Model>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
       backend.model.toList(models)
@@ -36,5 +38,25 @@ class BackendTests {
     }
 
     assertContains(models.last().data, Item("A new list item"))
+    assertEquals( "/", models.last().path)
+  }
+
+  @Test
+  fun test_displays_all_list_items() = runTest {
+    val repo = JvmRoomRepository(Enviroment.Dev)
+    val backend = BackendJvm(repository = repo)
+    val models = mutableListOf<Model>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      backend.model.toList(models)
+    }
+    with(repo) {
+      Item(text = "itemey 1").save()
+      Item(text = "itemey 2").save()
+    }
+
+    backend.get("/")
+
+    assertContains(models.last().data, Item("itemey 1"))
+    assertContains(models.last().data, Item("itemey 2"))
   }
 }

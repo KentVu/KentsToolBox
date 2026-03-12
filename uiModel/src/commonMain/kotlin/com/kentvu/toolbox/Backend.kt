@@ -16,6 +16,7 @@ interface Backend {
 
     /** [item] should be some sort of "Request" type, but I'm trying to keep things simple. */
     suspend fun post(path: String, item: Item)
+    suspend fun get(path: String)
 
     class Preview : Backend {
         // wait for explicit-backing-property to be stable to simplify this.
@@ -25,6 +26,10 @@ interface Backend {
 
         override suspend fun post(path: String, item: Item) {
             _model.value = Model("/", listOf(item))
+        }
+
+        override suspend fun get(path: String) {
+            _model.value = Model("/", listOf(Item("Buy peacock feathers")))
         }
     }
 }

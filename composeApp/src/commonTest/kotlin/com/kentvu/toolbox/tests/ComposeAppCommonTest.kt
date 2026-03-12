@@ -1,6 +1,5 @@
 package com.kentvu.toolbox.tests
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
@@ -17,28 +16,17 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.App
-import com.kentvu.toolbox.Backend
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
 class ComposeAppCommonTest {
-
-    class FakeBackend(
-        override val model: MutableStateFlow<Model> = MutableStateFlow(Model())
-    ) : Backend {
-        var called: Boolean = false
-        val backstack = mutableStateListOf("/")
-
-        override suspend fun post(path: String, item: Item) {
-            called = true
-            model.value = Model(path, listOf(item))
-        }
-
-    }
 
     @Test
     fun ensureFrontendUsesBackend() = runComposeUiTest {
@@ -54,6 +42,15 @@ class ComposeAppCommonTest {
     }
 
     @Test //the "contract" between the frontend and the backend.
+    fun ensureBackendGetIsCalledOnInit() = runComposeUiTest {
+        val model = MutableStateFlow(Model())
+        val backend = FakeBackend(model)
+        setContent { App(backend) }
+
+        assertEquals(1, backend.calledGetTimes)
+    }
+
+    @Test //the "contract" between the frontend and the backend.
     fun ensureBackendPostIsCalled() = runComposeUiTest {
         val model = MutableStateFlow(Model())
         val backend = FakeBackend(model)
@@ -66,8 +63,40 @@ class ComposeAppCommonTest {
         /*a*/waitForIdle()
 
         waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
-        assertTrue(backend.called)
+        assertTrue(backend.calledPost)
         onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
+    }
+
+    //  def test_redirects_after_POST(self):
+//    response = self.client.post("/", data={"item_text": "A new list item"})
+//    self.assertRedirects(response, "/")
+    @Test
+    fun test_redirects_after_POST() = runComposeUiTest {
+        val model = MutableStateFlow(Model())
+        val backend = FakeBackend()
+        setContent { App(backend) }
+        assertFalse(backend.calledPost, "backend.calledPost")
+        assertEquals(1, backend.calledGetTimes)
+
+        onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
+        onNodeWithTag("id_new_item").performImeAction()
+
+        assertTrue("backend.calledPost", backend.calledPost)
+        // "Redirect" means a reload after a POST.
+        assertEquals(2, backend.calledGetTimes, "A GET should be called after a POST")
+        //assertEquals("/", backend.model.value.path)
+    }
+
+    @Test
+    fun newItemTextFieldShouldClearAfterEnterPressed() = runComposeUiTest {
+        val model = MutableStateFlow(Model())
+        val backend = FakeBackend(model)
+        setContent { App(backend) }
+
+        onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
+        onNodeWithTag("id_new_item").performImeAction()
+
+        onNodeWithTag("id_new_item").assert(hasText(""))
     }
 }

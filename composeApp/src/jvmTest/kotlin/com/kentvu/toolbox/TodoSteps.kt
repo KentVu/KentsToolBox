@@ -42,7 +42,7 @@ class TodoSteps() {
     val steps = mapOf<StepOrder, ComposeUiTest.(/*Any*/) -> Unit>(
         StepOrder.One to {
             // While we're in JVM Let's spawn a window
-            setContent { todoWindow.content { App() } }
+            setContent { todoWindow.content { AppJvm() } }
             //setContent { App() }
             //onRoot().printToLog("DEBUG")
         },

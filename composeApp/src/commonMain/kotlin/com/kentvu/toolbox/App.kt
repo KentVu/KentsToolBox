@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.delete
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +49,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 @Preview
-fun App() {
+fun AppPreview() {
     App(Backend.Preview())
 }
 
@@ -60,12 +63,20 @@ fun App(backend: Backend) {
                 TopAppBar(title = { Text("To-Do", Modifier.testTag("header")) })
             },
         ) { paddingValues ->
-          val model by backend.model.collectAsState()
+            LaunchedEffect(Unit) {
+                backend.get("/")
+            }
+            val model by backend.model.collectAsState()
             when (model.path) {
-                "/" -> Home(Modifier.consumeWindowInsets(paddingValues), model.data,) {
+                "/" -> Home(Modifier.padding(paddingValues), model.data) {
                     backend.post(model.path, Item(it))
+                    // simulate a "redirect".
+                    backend.get("/")
                 }
-                "/second" -> Text("Second screen", Modifier.semantics { contentDescription = "Second screen" })
+
+                "/second" -> Text(
+                    "Second screen",
+                    Modifier.semantics { contentDescription = "Second screen" })
             }
 
         }
@@ -97,13 +108,14 @@ private fun Home(
                 scope.launch {
                     onSubmit("${textFieldState.text}")
                     performDefault()
+                    textFieldState.edit { delete(0, length) }
                 }
             },
             lineLimits = TextFieldLineLimits.SingleLine,
         )
         Column(Modifier.testTag("id_list_table")) {
             data.forEachIndexed { index, item ->
-                Text("1: ${item.text}")
+                Text("${index + 1}: ${item.text}")
             }
         }
         Button(onClick = { showContent = !showContent }) {

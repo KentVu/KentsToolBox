@@ -18,8 +18,10 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.App
+import com.kentvu.toolbox.AppJvm
 import com.kentvu.toolbox.Backend
 import com.kentvu.toolbox.BackendJvm
+import com.kentvu.toolbox.Enviroment
 import com.kentvu.toolbox.TodoWindow
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,9 +31,8 @@ class FunctionalTestsJvm {
 
   @Test
   fun test_can_start_a_todo_list() = runComposeUiTest {
-    val backend = BackendJvm(/*CoroutineScope(currentCoroutineContext())*/)
     //@When("She goes to check out its homepage")
-    setContent { App(backend) }
+    setContent { AppJvm() }
     //@Then("She notices the page title and header mention to-do lists")
     onNodeWithTag("header").run {
       assert(hasText("To-Do"))
@@ -60,6 +61,7 @@ class FunctionalTestsJvm {
     inputBox.performTextInput("Use peacock feathers to make a fly")
     inputBox.performImeAction()
     // The page updates again, and now shows both items on her list
+    waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 2)
     check_for_row_in_list_table("2: Use peacock feathers to make a fly")
     check_for_row_in_list_table("1: Buy peacock feathers")
     //@Then("Satisfied, she goes back to sleep")
@@ -69,5 +71,9 @@ class FunctionalTestsJvm {
     onNodeWithTag("id_list_table")
       .onChildren()
       .assertAny(hasText(row_text))
+  }
+  private fun ComposeUiTest.wait_and_check_for_row_in_list_table(row_text: String) {
+    waitUntilAtLeastOneExists(hasText(row_text))
+    check_for_row_in_list_table(row_text)
   }
 }

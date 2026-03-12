@@ -78,6 +78,10 @@ So there's no need for form-data dictionary key check etc.
 
 That's my `backend.model`!!
 
+### Skipped 5.12. Creating Our Production Database with migrate
+
+Production db? Migrate? (it's different for _Room_ )
+
 ## TODO
 
 - [x] Run the functional test in [Chapter 2](https://www.obeythetestinggoat.com/book/chapter_02_unittest.html).
