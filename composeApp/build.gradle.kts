@@ -27,7 +27,7 @@ kotlin {
         }
     }
 
-    listOf(
+    /*takeIf { enableIos }?.*/listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -74,6 +74,7 @@ kotlin {
             }
         }
         commonMain.dependencies {
+            implementation(projects.uiModel)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -82,7 +83,7 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(projects.uiModel)
+            implementation(libs.androidx.nav3.ui)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -91,6 +92,7 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            //implementation(libs.androidx.navigation3.ui)
         }
         jvmTest.dependencies {
             implementation(libs.ui.test.junit4)

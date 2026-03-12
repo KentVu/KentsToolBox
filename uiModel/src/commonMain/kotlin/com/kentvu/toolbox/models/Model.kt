@@ -1,5 +1,6 @@
 package com.kentvu.toolbox.models
 
 data class Model(
-    val items: List<Item> = emptyList(),
+    val path: String = "/",
+    val data: List<Item> = emptyList(),
 )

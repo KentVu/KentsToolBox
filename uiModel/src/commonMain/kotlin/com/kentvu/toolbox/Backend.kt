@@ -15,7 +15,7 @@ interface Backend {
     val model: StateFlow<Model>
 
     /** [item] should be some sort of "Request" type, but I'm trying to keep things simple. */
-    suspend fun post(action: Action, item: Item)
+    suspend fun post(path: String, item: Item)
 
     class Preview : Backend {
         // wait for explicit-backing-property to be stable to simplify this.
@@ -23,8 +23,8 @@ interface Backend {
         override val model: StateFlow<Model>
             get() = _model
 
-        override suspend fun post(action: Action, item: Item) {
-            _model.value = Model(listOf(item))
+        override suspend fun post(path: String, item: Item) {
+            _model.value = Model("/", listOf(item))
         }
     }
 }

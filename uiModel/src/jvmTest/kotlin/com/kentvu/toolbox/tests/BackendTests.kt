@@ -1,6 +1,5 @@
 package com.kentvu.toolbox.tests
 
-import com.kentvu.toolbox.Backend
 import com.kentvu.toolbox.BackendJvm
 import com.kentvu.toolbox.models.JvmRoomRepository
 import com.kentvu.toolbox.models.Item
@@ -26,7 +25,7 @@ class BackendTests {
     }
 
     backend.post(
-      Backend.Action.Add, Item(
+      "/", Item(
         text = "A new list item"
       )
     )
@@ -36,6 +35,6 @@ class BackendTests {
       assertEquals( "A new list item", new_item.text)
     }
 
-    assertContains(models.last().items, Item("A new list item"))
+    assertContains(models.last().data, Item("A new list item"))
   }
 }

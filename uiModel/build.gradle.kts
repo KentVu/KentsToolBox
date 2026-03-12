@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.androidMultiplatformLibrary)
+  // Optional, provides the @Serialize annotation for autogeneration of Serializers.
+  alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 kotlin {
@@ -40,6 +42,7 @@ kotlin {
     commonMain.dependencies {
       api(projects.shared)
       implementation(libs.kotlinx.coroutines)
+      //implementation(libs.androidx.navigation3.runtime)
     }
     // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
     val nonWebMain by creating {

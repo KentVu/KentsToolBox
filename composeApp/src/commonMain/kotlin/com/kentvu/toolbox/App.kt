@@ -4,9 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -22,6 +22,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.kentvu.toolbox.models.Item
@@ -57,49 +59,64 @@ fun App(backend: Backend) {
             topBar = {
                 TopAppBar(title = { Text("To-Do", Modifier.testTag("header")) })
             },
-        ) {
-            var showContent by remember { mutableStateOf(false) }
+        ) { paddingValues ->
+          val model by backend.model.collectAsState()
+            when (model.path) {
+                "/" -> Home(Modifier.consumeWindowInsets(paddingValues), model.data,) {
+                    backend.post(model.path, Item(it))
+                }
+                "/second" -> Text("Second screen", Modifier.semantics { contentDescription = "Second screen" })
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun Home(
+    modifier: Modifier = Modifier,
+    data: List<Item>,
+    onSubmit: suspend (text: String) -> Unit,
+) {
+    var showContent by remember { mutableStateOf(false) }
+    Column(
+        modifier = modifier
+            .semantics { contentDescription = "Home screen" }
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val scope = rememberCoroutineScope()
+        val textFieldState = rememberTextFieldState()
+        TextField(
+            textFieldState,
+            Modifier.testTag("id_new_item"),
+            placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            onKeyboardAction = { performDefault ->
+                scope.launch {
+                    onSubmit("${textFieldState.text}")
+                    performDefault()
+                }
+            },
+            lineLimits = TextFieldLineLimits.SingleLine,
+        )
+        Column(Modifier.testTag("id_list_table")) {
+            data.forEachIndexed { index, item ->
+                Text("1: ${item.text}")
+            }
+        }
+        Button(onClick = { showContent = !showContent }) {
+            Text("Click me!")
+        }
+        AnimatedVisibility(showContent) {
+            val greeting = remember { Greeting().greet() }
             Column(
-                modifier = Modifier
-                    .padding(it)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                val scope = rememberCoroutineScope()
-                val textFieldState = rememberTextFieldState()
-                TextField(
-                    textFieldState,
-                    Modifier.testTag("id_new_item"),
-                    placeholder = { Text("Enter a to-do item", Modifier.testTag("Placeholder")) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                    onKeyboardAction = { performDefault ->
-                        scope.launch {
-                            backend.post(Backend.Action.Add, Item("${textFieldState.text}"))
-                            performDefault()
-                        }
-                    },
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                )
-                val model by backend.model.collectAsState()
-                Column(Modifier.testTag("id_list_table")) {
-                    model.items.forEachIndexed { index, item ->
-                        Text("1: ${item.text}")
-                    }
-                }
-                Button(onClick = { showContent = !showContent }) {
-                    Text("Click me!")
-                }
-                AnimatedVisibility(showContent) {
-                    val greeting = remember { Greeting().greet() }
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Image(painterResource(Res.drawable.compose_multiplatform), null)
-                        Text("Compose: $greeting")
-                    }
-                }
+                Image(painterResource(Res.drawable.compose_multiplatform), null)
+                Text("Compose: $greeting")
             }
         }
     }
