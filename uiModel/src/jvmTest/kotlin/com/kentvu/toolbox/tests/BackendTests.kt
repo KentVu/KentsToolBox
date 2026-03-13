@@ -1,7 +1,7 @@
 package com.kentvu.toolbox.tests
 
 import com.kentvu.toolbox.BackendJvm
-import com.kentvu.toolbox.Enviroment
+import com.kentvu.toolbox.Environment
 import com.kentvu.toolbox.models.JvmRoomRepository
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Model
@@ -19,7 +19,7 @@ class BackendTests {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun test_can_save_a_POST_request() = runTest {
-    val repo = JvmRoomRepository(Enviroment.Dev)
+    val repo = JvmRoomRepository(Environment.Dev)
     val backend = BackendJvm(repository = repo)
     val models = mutableListOf<Model>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -43,7 +43,7 @@ class BackendTests {
 
   @Test
   fun test_displays_all_list_items() = runTest {
-    val repo = JvmRoomRepository(Enviroment.Dev)
+    val repo = JvmRoomRepository(Environment.Dev)
     val backend = BackendJvm(repository = repo)
     val models = mutableListOf<Model>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

@@ -4,6 +4,12 @@ obeythetestinggoat book's TODO app for KMP.
 Let's see what interesting analogies can we discover between a Compose app with a Web app along
 the way.
 
+To closely follow the book (i.e. Make codes in this app resemble codes in the book)
+as much as possible, I've structure this app to mimic a HTTP-like transaction, the "Backend"
+serves as a "local" server and drives the UI via "Model" class, 
+Think of "Model" like "template variables", while
+Composable UI like Django templates.
+
 ## Chapter 3. Testing a Simple Home Page with Unit Tests
 
 > [...] Django was with any web server, Django’s main job is to decide what to do when a user asks for a particular URL on our site.[...]

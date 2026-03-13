@@ -1,6 +1,5 @@
 package com.kentvu.toolbox.tests
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -17,14 +16,8 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import androidx.compose.ui.test.waitUntilNodeCount
-import com.kentvu.toolbox.App
 import com.kentvu.toolbox.AppJvm
-import com.kentvu.toolbox.Backend
-import com.kentvu.toolbox.BackendJvm
-import com.kentvu.toolbox.Enviroment
-import com.kentvu.toolbox.TodoWindow
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
 class FunctionalTestsJvm {
@@ -51,9 +44,7 @@ class FunctionalTestsJvm {
     inputBox.performImeAction()
     // or try this:
     //inputBox.performKeyInput { Key.Enter }
-    waitUntilAtLeastOneExists(hasAnyAncestor(hasTestTag("id_list_table")))
-    //or: waitUntil { onNodeWithTag("id_list_table").onChildren().fetchSemanticsNodes().isNotEmpty() }
-    check_for_row_in_list_table("1: Buy peacock feathers")
+    wait_and_check_for_row_in_list_table("1: Buy peacock feathers")
     //There is still a text box inviting her to add another item.
     //She enters "Use peacock feathers to make a fly"
     // (Edith is very methodical)
@@ -61,9 +52,8 @@ class FunctionalTestsJvm {
     inputBox.performTextInput("Use peacock feathers to make a fly")
     inputBox.performImeAction()
     // The page updates again, and now shows both items on her list
-    waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 2)
-    check_for_row_in_list_table("2: Use peacock feathers to make a fly")
-    check_for_row_in_list_table("1: Buy peacock feathers")
+    wait_and_check_for_row_in_list_table("2: Use peacock feathers to make a fly")
+    wait_and_check_for_row_in_list_table("1: Buy peacock feathers")
     //@Then("Satisfied, she goes back to sleep")
   }
 

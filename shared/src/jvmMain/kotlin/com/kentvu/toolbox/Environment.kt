@@ -1,6 +1,6 @@
 package com.kentvu.toolbox
 
-enum class Enviroment() {
+enum class Environment() {
   Production,
   Dev
 }

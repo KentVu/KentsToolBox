@@ -1,7 +1,7 @@
 package com.kentvu.toolbox.models
 
 import androidx.room.Room
-import com.kentvu.toolbox.Enviroment
+import com.kentvu.toolbox.Environment
 import com.kentvu.toolbox.data.AppDatabase
 import com.kentvu.toolbox.data.getDatabaseBuilder
 import com.kentvu.toolbox.data.getRoomDatabase
@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.first
 
 /** Beware the parameter [db] default value uses **[Room.inMemoryDatabaseBuilder]** */
 class JvmRoomRepository(
-  enviroment: Enviroment,
+  environment: Environment,
   val db: AppDatabase = getRoomDatabase(
-    if(enviroment == Enviroment.Production) getDatabaseBuilder()
+    if(environment == Environment.Production) getDatabaseBuilder()
     else Room.inMemoryDatabaseBuilder()
   )
 ) : Repository {
