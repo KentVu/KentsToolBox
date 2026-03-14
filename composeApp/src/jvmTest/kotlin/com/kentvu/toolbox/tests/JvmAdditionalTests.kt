@@ -1,8 +1,11 @@
-package com.kentvu.toolbox
+package com.kentvu.toolbox.tests
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
+import com.kentvu.toolbox.App
+import com.kentvu.toolbox.Backend
+import com.kentvu.toolbox.TodoWindow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

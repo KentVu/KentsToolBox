@@ -10,6 +10,8 @@ serves as a "local" server and drives the UI via "Model" class,
 Think of "Model" like "template variables", while
 Composable UI like Django templates.
 
+Maybe this is a exotic way to learn python and hone my KMP skill, I think I like it!
+
 ## Chapter 3. Testing a Simple Home Page with Unit Tests
 
 > [...] Django was with any web server, Django’s main job is to decide what to do when a user asks for a particular URL on our site.[...]
@@ -87,6 +89,12 @@ That's my `backend.model`!!
 ### Skipped 5.12. Creating Our Production Database with migrate
 
 Production db? Migrate? (it's different for _Room_ )
+
+### Chapter 7
+
+Multi-user? Unique URL? Maybe this is a good chance to introduce
+a real backend server serving REST API. (Fortunately) I've checked
+the server module in the new project wizard..
 
 ## TODO
 

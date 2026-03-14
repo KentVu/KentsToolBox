@@ -1,11 +1,10 @@
-package com.kentvu.toolbox.tests
+package com.kentvu.toolbox.tests.functional
 
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -15,12 +14,11 @@ import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
-import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.AppJvm
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class FunctionalTestsJvm {
+class NewVisitorTest {
 
   @Test
   fun test_can_start_a_todo_list() = runComposeUiTest {
@@ -44,7 +42,7 @@ class FunctionalTestsJvm {
     inputBox.performImeAction()
     // or try this:
     //inputBox.performKeyInput { Key.Enter }
-    wait_and_check_for_row_in_list_table("1: Buy peacock feathers")
+    wait_for_row_in_list_table("1: Buy peacock feathers")
     //There is still a text box inviting her to add another item.
     //She enters "Use peacock feathers to make a fly"
     // (Edith is very methodical)
@@ -52,8 +50,8 @@ class FunctionalTestsJvm {
     inputBox.performTextInput("Use peacock feathers to make a fly")
     inputBox.performImeAction()
     // The page updates again, and now shows both items on her list
-    wait_and_check_for_row_in_list_table("2: Use peacock feathers to make a fly")
-    wait_and_check_for_row_in_list_table("1: Buy peacock feathers")
+    wait_for_row_in_list_table("2: Use peacock feathers to make a fly")
+    wait_for_row_in_list_table("1: Buy peacock feathers")
     //@Then("Satisfied, she goes back to sleep")
   }
 
@@ -62,7 +60,7 @@ class FunctionalTestsJvm {
       .onChildren()
       .assertAny(hasText(row_text))
   }
-  private fun ComposeUiTest.wait_and_check_for_row_in_list_table(row_text: String) {
+  private fun ComposeUiTest.wait_for_row_in_list_table(row_text: String) {
     waitUntilAtLeastOneExists(hasText(row_text))
     check_for_row_in_list_table(row_text)
   }

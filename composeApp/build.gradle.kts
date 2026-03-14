@@ -92,6 +92,8 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
             //implementation(libs.androidx.navigation3.ui)
         }
         jvmTest.dependencies {
@@ -139,4 +141,8 @@ tasks.withType<Test> {
     // between different examples and scenarios.
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
 
+}
+
+tasks.register<Test>("e2eTest") {
+    dependsOn
 }
