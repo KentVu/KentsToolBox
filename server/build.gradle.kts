@@ -8,7 +8,8 @@ group = "com.kentvu.toolbox"
 version = "1.0.0"
 application {
     mainClass.set("com.kentvu.toolbox.ApplicationKt")
-    
+
+    project.ext["development"] = true
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }

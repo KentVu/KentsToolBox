@@ -1,10 +1,10 @@
 package com.kentvu.toolbox.tests
 
-import com.kentvu.toolbox.BackendJvm
+import com.kentvu.toolbox.ModelJvm
 import com.kentvu.toolbox.Environment
 import com.kentvu.toolbox.models.JvmRoomRepository
 import com.kentvu.toolbox.models.Item
-import com.kentvu.toolbox.models.Model
+import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -15,15 +15,15 @@ import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 // HomePageTests
-class BackendTests {
+class ModelTests {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun test_can_save_a_POST_request() = runTest {
     val repo = JvmRoomRepository(Environment.Dev)
-    val backend = BackendJvm(repository = repo)
-    val models = mutableListOf<Model>()
+    val backend = ModelJvm(repository = repo)
+    val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      backend.model.toList(models)
+      backend.state.toList(states)
     }
 
     backend.post(
@@ -37,17 +37,17 @@ class BackendTests {
       assertEquals( "A new list item", new_item.text)
     }
 
-    assertContains(models.last().data, Item("A new list item"))
-    assertEquals( "/", models.last().path)
+    assertContains(states.last().data, Item("A new list item"))
+    assertEquals( "/", states.last().path)
   }
 
   @Test
   fun test_displays_all_list_items() = runTest {
     val repo = JvmRoomRepository(Environment.Dev)
-    val backend = BackendJvm(repository = repo)
-    val models = mutableListOf<Model>()
+    val backend = ModelJvm(repository = repo)
+    val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      backend.model.toList(models)
+      backend.state.toList(states)
     }
     with(repo) {
       Item(text = "itemey 1").save()
@@ -56,7 +56,7 @@ class BackendTests {
 
     backend.get("/")
 
-    assertContains(models.last().data, Item("itemey 1"))
-    assertContains(models.last().data, Item("itemey 2"))
+    assertContains(states.last().data, Item("itemey 1"))
+    assertContains(states.last().data, Item("itemey 2"))
   }
 }

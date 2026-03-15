@@ -9,7 +9,7 @@ fun main() = application {
 
 @Composable
 fun AppJvm(onCloseRequest: () -> Unit = {}) {
-    val backend = BackendJvm(Environment.Production)
+    val backend = ModelJvm(Environment.Production)
     TodoWindow(
         onCloseRequest = onCloseRequest,
     ).content {

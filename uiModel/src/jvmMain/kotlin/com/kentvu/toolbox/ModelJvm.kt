@@ -2,21 +2,21 @@ package com.kentvu.toolbox
 
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.JvmRoomRepository
-import com.kentvu.toolbox.models.Model
+import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class BackendJvm(
+class ModelJvm(
   environment: Environment = Environment.Dev,
   private val repository: JvmRoomRepository = JvmRoomRepository(environment),
   /*private val coroutineScope: CoroutineScope,*/
-) : Backend {
-  override val model = MutableStateFlow(Model())
+) : Model {
+  override val state = MutableStateFlow(State())
 
   override suspend fun get(path: String) {
     val items = with(repository) {
       Item.objects()
     }
-    model.value = Model("/", items)
+    state.value = State("/", items)
   }
 
   override suspend fun post(
@@ -28,6 +28,6 @@ class BackendJvm(
       item.save()
     }
     // notifies downstream (UI)
-    model.value = Model("/", listOf(item))
+    state.value = State("/", listOf(item))
   }
 }

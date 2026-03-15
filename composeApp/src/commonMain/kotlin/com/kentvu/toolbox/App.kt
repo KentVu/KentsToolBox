@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,7 +12,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.delete
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -50,12 +48,12 @@ import kotlinx.coroutines.launch
 @Composable
 @Preview
 fun AppPreview() {
-    App(Backend.Preview())
+    App(Model.Preview())
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(backend: Backend) {
+fun App(backend: Model) {
     MaterialTheme {
         Scaffold(
             Modifier.safeContentPadding(),
@@ -66,7 +64,7 @@ fun App(backend: Backend) {
             LaunchedEffect(Unit) {
                 backend.get("/")
             }
-            val model by backend.model.collectAsState()
+            val model by backend.state.collectAsState()
             when (model.path) {
                 "/" -> Home(Modifier.padding(paddingValues), model.data) {
                     backend.post(model.path, Item(it))
