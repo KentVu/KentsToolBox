@@ -6,7 +6,7 @@ import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class ModelJvm(
-  environment: Environment = Environment.Dev,
+  environment: Environment = Environment.Test,
   private val repository: JvmRoomRepository = JvmRoomRepository(environment),
   /*private val coroutineScope: CoroutineScope,*/
 ) : Model {

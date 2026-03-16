@@ -19,7 +19,7 @@ class ModelTests {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun test_can_save_a_POST_request() = runTest {
-    val repo = JvmRoomRepository(Environment.Dev)
+    val repo = JvmRoomRepository(Environment.Test)
     val backend = ModelJvm(repository = repo)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -43,7 +43,7 @@ class ModelTests {
 
   @Test
   fun test_displays_all_list_items() = runTest {
-    val repo = JvmRoomRepository(Environment.Dev)
+    val repo = JvmRoomRepository(Environment.Test)
     val backend = ModelJvm(repository = repo)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -59,4 +59,5 @@ class ModelTests {
     assertContains(states.last().data, Item("itemey 1"))
     assertContains(states.last().data, Item("itemey 2"))
   }
+
 }
