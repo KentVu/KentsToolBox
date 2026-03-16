@@ -7,14 +7,17 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun main() {
-    embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
+    embeddedServer(Netty, port = SERVER_PORT, watchPaths = listOf("classes"), host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
 
-fun Application.module() {
+suspend fun Application.module() {
     routing {
         get("/") {
             call.respondText("Ktor: ${Greeting().greet()}")
+        }
+        get("/items") {
+            call.respondText("Ktor9: ${Greeting().greet()}")
         }
     }
 }

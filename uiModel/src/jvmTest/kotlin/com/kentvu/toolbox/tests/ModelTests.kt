@@ -1,8 +1,10 @@
 package com.kentvu.toolbox.tests
 
-import com.kentvu.toolbox.ModelJvm
+import com.kentvu.toolbox.DefaultModel
+import com.kentvu.toolbox.DefaultRepository
 import com.kentvu.toolbox.Environment
-import com.kentvu.toolbox.models.JvmRoomRepository
+import com.kentvu.toolbox.RemoteDataSource
+import com.kentvu.toolbox.models.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,8 +21,9 @@ class ModelTests {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun test_can_save_a_POST_request() = runTest {
-    val repo = JvmRoomRepository(Environment.Test)
-    val backend = ModelJvm(repository = repo)
+    val datasource = JvmRoomDatasource(Environment.Test)
+    val repo = DefaultRepository(datasource, RemoteDataSource())
+    val backend = DefaultModel(repository = repo)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
       backend.state.toList(states)
@@ -43,8 +46,8 @@ class ModelTests {
 
   @Test
   fun test_displays_all_list_items() = runTest {
-    val repo = JvmRoomRepository(Environment.Test)
-    val backend = ModelJvm(repository = repo)
+    val repo = JvmRoomDatasource(Environment.Test)
+    val backend = DefaultModel(repository = DefaultRepository(repo, repo))
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
       backend.state.toList(states)

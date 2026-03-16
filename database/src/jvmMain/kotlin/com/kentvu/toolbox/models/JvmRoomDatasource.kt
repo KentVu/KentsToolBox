@@ -1,31 +1,34 @@
 package com.kentvu.toolbox.models
 
 import androidx.room.Room
+import com.kentvu.toolbox.DataSource
 import com.kentvu.toolbox.Environment
 import com.kentvu.toolbox.data.AppDatabase
+import com.kentvu.toolbox.data.Item as DaoItem
 import com.kentvu.toolbox.data.getDatabaseBuilder
 import com.kentvu.toolbox.data.getRoomDatabase
 import kotlinx.coroutines.flow.first
 
 /** Beware the parameter [db] default value uses **[Room.inMemoryDatabaseBuilder]** */
-class JvmRoomRepository(
+class JvmRoomDatasource(
   environment: Environment,
   val db: AppDatabase = getRoomDatabase(
     if(environment == Environment.Production) getDatabaseBuilder()
     else Room.inMemoryDatabaseBuilder()
   )
-) : Repository {
-  override suspend fun Item.Companion.count(): Int =
+) : DataSource {
+  suspend fun Item.Companion.count(): Int =
     db.getDao().count()
 
-  override suspend fun Item.Companion.objects(): List<Item> =
-    db.getDao().getAllAsFlow().first().toModel()
-
-  override suspend fun Item.save() {
-    db.getDao().insert(com.kentvu.toolbox.data.Item(text = text))
+  suspend fun Item.save() {
+    db.getDao().insert(DaoItem(text = text))
   }
 
-  private fun List<com.kentvu.toolbox.data.Item>.toModel(): List<Item> = map {
+  private fun List<DaoItem>.toModel(): List<Item> = map {
     Item(text = it.text)
+  }
+
+  override suspend fun items(): List<Item> {
+    return db.getDao().getAllAsFlow().first().toModel()
   }
 }

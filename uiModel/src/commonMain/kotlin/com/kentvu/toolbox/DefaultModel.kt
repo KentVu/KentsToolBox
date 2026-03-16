@@ -1,13 +1,12 @@
 package com.kentvu.toolbox
 
 import com.kentvu.toolbox.models.Item
-import com.kentvu.toolbox.models.JvmRoomRepository
+import com.kentvu.toolbox.models.Repository
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class ModelJvm(
-  environment: Environment = Environment.Test,
-  private val repository: JvmRoomRepository = JvmRoomRepository(environment),
+class DefaultModel(
+  private val repository: Repository,
   /*private val coroutineScope: CoroutineScope,*/
 ) : Model {
   override val state = MutableStateFlow(State())

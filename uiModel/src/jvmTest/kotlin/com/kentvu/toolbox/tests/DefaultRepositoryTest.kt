@@ -4,6 +4,7 @@ import com.kentvu.toolbox.DataSource
 import com.kentvu.toolbox.DefaultRepository
 import com.kentvu.toolbox.models.FallBackToLocalDataSourceException
 import com.kentvu.toolbox.models.Item
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -19,8 +20,8 @@ class DefaultRepositoryTest {
     val localDataSource = mockk<DataSource>()
     val remoteDataSource = mockk<DataSource>()
     val expected = listOf(Item("item 1"))
-    every { localDataSource.items() }.returns(expected)
-    every { remoteDataSource.items() }.throws(Exception())
+    coEvery { localDataSource.items() }.returns(expected)
+    coEvery { remoteDataSource.items() }.throws(Exception())
     val repository = DefaultRepository(localDataSource, remoteDataSource)
     //var exception: Exception? = null
     //var result = Result.success(listOf<Item>())

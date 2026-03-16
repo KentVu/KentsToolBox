@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -22,8 +23,11 @@ kotlin {
     }
   }
 
-  iosArm64()
-  iosSimulatorArm64()
+  val enableIos: Boolean by rootProject.extra
+  if (enableIos) {
+    iosArm64()
+    iosSimulatorArm64()
+  }
 
   jvm()
 
@@ -42,6 +46,10 @@ kotlin {
     commonMain.dependencies {
       api(projects.shared)
       implementation(libs.kotlinx.coroutines)
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.cio)
+      implementation(libs.ktor.client.contentNegotiation)
+      implementation(libs.ktor.serialization.json)
     }
     // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
     val nonWebMain by creating {

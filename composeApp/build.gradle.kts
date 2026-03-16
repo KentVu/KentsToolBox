@@ -27,7 +27,7 @@ kotlin {
         }
     }
 
-    /*takeIf { enableIos }?.*/listOf(
+    if (rootProject.extra["enableIos"] == true) listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -90,11 +90,13 @@ kotlin {
             implementation(libs.ui.test)
         }
         jvmMain.dependencies {
+            // For running desktop app directly.
+            implementation(projects.database)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            //TODO remove
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.cio)
-            //implementation(libs.androidx.navigation3.ui)
         }
         jvmTest.dependencies {
             implementation(libs.ui.test.junit4)
@@ -141,8 +143,4 @@ tasks.withType<Test> {
     // between different examples and scenarios.
     systemProperty("cucumber.junit-platform.naming-strategy", "long")
 
-}
-
-tasks.register<Test>("e2eTest") {
-    dependsOn
 }
