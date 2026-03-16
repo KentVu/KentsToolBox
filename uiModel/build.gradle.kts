@@ -6,7 +6,6 @@ plugins {
   alias(libs.plugins.androidMultiplatformLibrary)
   // Optional, provides the @Serialize annotation for autogeneration of Serializers.
   alias(libs.plugins.jetbrains.kotlin.serialization)
-  alias(libs.plugins.mockative)
 }
 
 kotlin {
@@ -43,7 +42,6 @@ kotlin {
     commonMain.dependencies {
       api(projects.shared)
       implementation(libs.kotlinx.coroutines)
-      implementation(libs.mockative)
     }
     // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
     val nonWebMain by creating {
@@ -53,7 +51,12 @@ kotlin {
       }
     }
     androidMain.get().dependsOn(nonWebMain)
-    jvmMain.get().dependsOn(nonWebMain)
+    jvmMain {
+      dependsOn(nonWebMain)
+      dependencies {
+        implementation(libs.mockk)
+      }
+    }
     commonTest.dependencies {
       implementation(libs.kotlin.test)
       implementation(libs.kotlinx.coroutinesTest)

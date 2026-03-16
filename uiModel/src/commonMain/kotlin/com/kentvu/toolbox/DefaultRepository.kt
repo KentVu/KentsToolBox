@@ -1,15 +1,20 @@
 package com.kentvu.toolbox
 
+import com.kentvu.toolbox.models.FallBackToLocalDataSourceException
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Repository
 
-class DefaultRepository(localDataSource: DataSource, remoteDataSource: DataSource) : Repository {
+class DefaultRepository(private val localDataSource: DataSource, private val remoteDataSource: DataSource) : Repository {
   override suspend fun Item.Companion.count(): Int {
     TODO("Not yet implemented")
   }
 
   override suspend fun Item.Companion.objects(): List<Item> {
-    TODO("Not yet implemented")
+    return try {
+      remoteDataSource.items()
+    } catch (e: Exception) {
+      throw FallBackToLocalDataSourceException(localDataSource.items(), e)
+    }
   }
 
   override suspend fun Item.save() {
