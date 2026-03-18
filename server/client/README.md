@@ -1,0 +1,1 @@
+A client for communicating with the server module.

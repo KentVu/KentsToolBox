@@ -1,1 +1,1 @@
-Contains model classes ~and a client for communicating with the server module~.
+Contains model classes.
