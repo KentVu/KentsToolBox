@@ -10,9 +10,10 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":composeApp:cleanJvmTest" />
+          <option value=":server:classes" />
           <option value=":composeApp:jvmTest" />
           <option value=":uiModel:jvmTest" />
+          <option value=":server:client:jvmTest" />
         </list>
       </option>
       <option name="vmOptions" />

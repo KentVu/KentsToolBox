@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -9,7 +8,7 @@ plugins {
 
 kotlin {
   androidLibrary {
-    namespace = "com.kentvu.toolbox.uimodel"
+    namespace = "com.kentvu.toolbox.shared.model"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     compilerOptions {
@@ -38,30 +37,28 @@ kotlin {
     browser()
   }
 
-  applyDefaultHierarchyTemplate()
-
   sourceSets {
+    // Workaround Java-only module server can't see ktor-http deps in AndroidStudio
+    // Set to true to enable
+    val workaroundServerModule = false
     commonMain.dependencies {
       api(projects.shared)
-      //api(projects.shared.model)
-      implementation(projects.server.client)
+      api(projects.shared.model)
       implementation(libs.kotlinx.coroutines)
-    }
-    // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
-    val nonWebMain by creating {
-      dependsOn(commonMain.get())
-      dependencies {
-        implementation(projects.database)
+      if (!workaroundServerModule) {
+        implementation(libs.ktor.client.core)
+        implementation(libs.ktor.client.cio)
+        implementation(libs.ktor.client.contentNegotiation)
+        implementation(libs.ktor.serialization.json)
       }
     }
-    androidMain.get().dependsOn(nonWebMain)
-    jvmMain {
-      dependsOn(nonWebMain)
-      dependencies {
+    jvmMain.dependencies {
+      if (workaroundServerModule) {
+        implementation(libs.ktor.client.core)
+        implementation(libs.ktor.client.cio)
+        implementation(libs.ktor.client.contentNegotiation)
+        implementation(libs.ktor.serialization.json)
       }
-    }
-    jvmTest.dependencies {
-      implementation(libs.mockk)
     }
     commonTest.dependencies {
       implementation(libs.kotlin.test)

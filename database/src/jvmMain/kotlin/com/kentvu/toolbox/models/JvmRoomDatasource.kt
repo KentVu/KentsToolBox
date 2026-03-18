@@ -20,8 +20,8 @@ class JvmRoomDatasource(
   suspend fun Item.Companion.count(): Int =
     db.getDao().count()
 
-  suspend fun Item.save() {
-    db.getDao().insert(DaoItem(text = text))
+  override suspend fun save(item: Item) {
+    db.getDao().insert(DaoItem(text = item.text))
   }
 
   private fun List<DaoItem>.toModel(): List<Item> = map {

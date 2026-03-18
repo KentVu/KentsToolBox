@@ -75,6 +75,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.uiModel)
+            implementation(projects.server.client)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -94,9 +95,6 @@ kotlin {
             implementation(projects.database)
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
-            //TODO remove
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.cio)
         }
         jvmTest.dependencies {
             implementation(libs.ui.test.junit4)

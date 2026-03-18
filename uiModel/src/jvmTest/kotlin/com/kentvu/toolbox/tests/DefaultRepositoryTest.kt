@@ -5,7 +5,6 @@ import com.kentvu.toolbox.DefaultRepository
 import com.kentvu.toolbox.models.FallBackToLocalDataSourceException
 import com.kentvu.toolbox.models.Item
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import kotlin.collections.listOf

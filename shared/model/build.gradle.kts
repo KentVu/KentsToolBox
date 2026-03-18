@@ -1,15 +1,16 @@
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.androidMultiplatformLibrary)
+  // Optional, provides the @Serialize annotation for autogeneration of Serializers.
+  alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 kotlin {
   androidLibrary {
-    namespace = "com.kentvu.toolbox.uimodel"
+    namespace = "com.kentvu.toolbox.shared.model"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     compilerOptions {
@@ -38,30 +39,15 @@ kotlin {
     browser()
   }
 
-  applyDefaultHierarchyTemplate()
-
   sourceSets {
     commonMain.dependencies {
       api(projects.shared)
-      //api(projects.shared.model)
-      implementation(projects.server.client)
       implementation(libs.kotlinx.coroutines)
+      implementation(libs.kotlinx.serialization.core)
     }
-    // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
-    val nonWebMain by creating {
-      dependsOn(commonMain.get())
-      dependencies {
-        implementation(projects.database)
-      }
-    }
-    androidMain.get().dependsOn(nonWebMain)
     jvmMain {
-      dependsOn(nonWebMain)
       dependencies {
       }
-    }
-    jvmTest.dependencies {
-      implementation(libs.mockk)
     }
     commonTest.dependencies {
       implementation(libs.kotlin.test)

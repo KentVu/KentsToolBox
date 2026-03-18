@@ -12,12 +12,13 @@ class DefaultRepository(private val localDataSource: DataSource, private val rem
   override suspend fun Item.Companion.objects(): List<Item> {
     return try {
       remoteDataSource.items()
+      // TODO cache data
     } catch (e: Exception) {
       throw FallBackToLocalDataSourceException(localDataSource.items(), e)
     }
   }
 
   override suspend fun Item.save() {
-    TODO("Not yet implemented")
+    remoteDataSource.save(this)
   }
 }

@@ -53,7 +53,7 @@ fun AppPreview() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(backend: Model) {
+fun App(model: Model) {
     MaterialTheme {
         Scaffold(
             Modifier.safeContentPadding(),
@@ -62,14 +62,14 @@ fun App(backend: Model) {
             },
         ) { paddingValues ->
             LaunchedEffect(Unit) {
-                backend.get("/")
+                model.get("/")
             }
-            val model by backend.state.collectAsState()
-            when (model.path) {
-                "/" -> Home(Modifier.padding(paddingValues), model.data) {
-                    backend.post(model.path, Item(it))
+            val state by model.state.collectAsState()
+            when (state.path) {
+                "/" -> Home(Modifier.padding(paddingValues), state.data) {
+                    model.post(state.path, Item(it))
                     // simulate a "redirect".
-                    backend.get("/")
+                    model.get("/")
                 }
 
                 "/second" -> Text(

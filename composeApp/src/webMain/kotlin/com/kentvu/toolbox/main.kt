@@ -5,7 +5,10 @@ import androidx.compose.ui.window.ComposeViewport
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    val localDataSource = JsDatasource()
     ComposeViewport {
-        App()
+        App(DefaultModel(
+            DefaultRepository(localDataSource, localDataSource)
+        ))
     }
 }
