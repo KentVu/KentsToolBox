@@ -1,29 +1,55 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.ktor)
-    application
+  alias(libs.plugins.kotlinMultiplatform)
+  //alias(libs.plugins.androidMultiplatformLibrary)
+  alias(libs.plugins.ktor)
 }
 
-group = "com.kentvu.toolbox"
-version = "1.0.0"
-application {
-    mainClass.set("com.kentvu.toolbox.ApplicationKt")
+kotlin {
 
-    project.ext["development"] = true
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
+  /*androidLibrary {
+    namespace = "com.kentvu.toolbox.shared.model"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-dependencies {
-    implementation(projects.shared)
-    implementation(projects.shared.model)
-    implementation(projects.database)
-    implementation(libs.logback)
-    implementation(libs.ktor.serverCore)
-    //implementation("io.ktor:ktor-http-jvm:3.3.3")
-    implementation(libs.ktor.serialization.json)
-    implementation(libs.ktor.serverNetty)
-    implementation(libs.ktor.server.contentNegotiation)
-    testImplementation(libs.ktor.serverTestHost)
-    testImplementation(libs.kotlin.testJunit)
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+    }
+
+    androidResources {
+      enable = true
+    }
+  }*/
+
+  jvm()
+
+  /*js {
+    browser()
+  }
+
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    browser()
+  }*/
+
+  sourceSets {
+    commonMain.dependencies {
+      implementation(projects.shared)
+      implementation(projects.shared.model)
+      implementation(projects.database)
+      implementation(libs.ktor.serialization.json)
+      implementation(libs.ktor.server.contentNegotiation)
+      implementation(libs.logback)
+      implementation(libs.ktor.serverCore)
+      //implementation("io.ktor:ktor-http-jvm:3.3.3")
+      implementation(libs.ktor.serverNetty)
+    }
+    jvmMain.dependencies {
+    }
+    jvmTest.dependencies {
+      implementation(libs.ktor.serverTestHost)
+      implementation(libs.kotlin.testJunit)
+    }
+  }
 }
