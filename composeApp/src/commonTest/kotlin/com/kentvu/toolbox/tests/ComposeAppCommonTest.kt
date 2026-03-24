@@ -31,8 +31,8 @@ class ComposeAppCommonTest {
     @Test
     fun ensureFrontendUsesBackend() = runComposeUiTest {
         val state = MutableStateFlow(State())
-        val backend = FakeModel(state)
-        setContent { App(backend) }
+        val model = FakeModel(state)
+        setContent { App(model) }
         onNodeWithText("Buy peacock feathers")
             .assertDoesNotExist()
         state.emit(State("/", listOf(Item("Buy peacock feathers"))))
@@ -44,17 +44,17 @@ class ComposeAppCommonTest {
     @Test //the "contract" between the frontend and the backend.
     fun ensureBackendGetIsCalledOnInit() = runComposeUiTest {
         val state = MutableStateFlow(State())
-        val backend = FakeModel(state)
-        setContent { App(backend) }
+        val model = FakeModel(state)
+        setContent { App(model) }
 
-        assertEquals(1, backend.calledGetTimes)
+        assertEquals(1, model.calledGetTimes)
     }
 
     @Test //the "contract" between the frontend and the backend.
     fun ensureBackendPostIsCalled() = runComposeUiTest {
         val state = MutableStateFlow(State())
-        val backend = FakeModel(state)
-        setContent { App(backend) }
+        val model = FakeModel(state)
+        setContent { App(model) }
         onNodeWithTag("id_list_table").onChildren().assertCountEquals(0)
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
 
@@ -63,7 +63,7 @@ class ComposeAppCommonTest {
         /*a*/waitForIdle()
 
         waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
-        assertTrue(backend.calledPost)
+        assertTrue(model.calledPost)
         onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
     }
@@ -74,25 +74,25 @@ class ComposeAppCommonTest {
     @Test
     fun test_redirects_after_POST() = runComposeUiTest {
         val state = MutableStateFlow(State())
-        val backend = FakeModel()
-        setContent { App(backend) }
-        assertFalse(backend.calledPost, "backend.calledPost")
-        assertEquals(1, backend.calledGetTimes)
+        val model = FakeModel()
+        setContent { App(model) }
+        assertFalse(model.calledPost, "backend.calledPost")
+        assertEquals(1, model.calledGetTimes)
 
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
         onNodeWithTag("id_new_item").performImeAction()
 
-        assertTrue("backend.calledPost", backend.calledPost)
+        assertTrue("backend.calledPost", model.calledPost)
         // "Redirect" means a reload after a POST.
-        assertEquals(2, backend.calledGetTimes, "A GET should be called after a POST")
+        assertEquals(2, model.calledGetTimes, "A GET should be called after a POST")
         //assertEquals("/", backend.model.value.path)
     }
 
     @Test
     fun newItemTextFieldShouldClearAfterEnterPressed() = runComposeUiTest {
         val state = MutableStateFlow(State())
-        val backend = FakeModel(state)
-        setContent { App(backend) }
+        val model = FakeModel(state)
+        setContent { App(model) }
 
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
         onNodeWithTag("id_new_item").performImeAction()

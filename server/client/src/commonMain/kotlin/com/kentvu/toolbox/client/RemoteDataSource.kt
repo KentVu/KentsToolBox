@@ -23,6 +23,11 @@ class RemoteDataSource: DataSource, AutoCloseable {
     }
   }
 
+  override suspend fun itemsCount(): Int {
+    val response = client.get("http://127.0.0.1:8080/items/count")
+    return response.body()
+  }
+
   override suspend fun items(): List<Item> {
     val response = client.get("http://127.0.0.1:8080/items")
     return response.body<List<SItem>>().map { it.toModel() }
@@ -41,6 +46,13 @@ class RemoteDataSource: DataSource, AutoCloseable {
 
   override fun close() {
     client.close()
+  }
+
+  override suspend fun itemsClear(): Int {
+    val response = client.get("http://127.0.0.1:8080/items/clear")
+    println("Item clear response: " + response.bodyAsText())
+    require(response.status.isSuccess()) { "Failed to clear Items." }
+    return response.body()
   }
 
 }

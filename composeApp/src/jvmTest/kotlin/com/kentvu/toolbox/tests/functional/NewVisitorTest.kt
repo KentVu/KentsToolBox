@@ -1,5 +1,6 @@
 package com.kentvu.toolbox.tests.functional
 
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -12,9 +13,11 @@ import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import com.kentvu.toolbox.AppJvm
+import com.kentvu.toolbox.client.RemoteDataSource
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -22,6 +25,8 @@ class NewVisitorTest {
 
   @Test
   fun test_can_start_a_todo_list() = runComposeUiTest {
+    //Given a blank to-do list
+    RemoteDataSource().itemsClear()
     //@When("She goes to check out its homepage")
     setContent { AppJvm() }
     //@Then("She notices the page title and header mention to-do lists")
@@ -61,7 +66,12 @@ class NewVisitorTest {
       .assertAny(hasText(row_text))
   }
   private fun ComposeUiTest.wait_for_row_in_list_table(row_text: String) {
-    waitUntilAtLeastOneExists(hasText(row_text))
+    try {
+      waitUntilAtLeastOneExists(hasText(row_text))
+    } catch (e: ComposeTimeoutException) {
+      onNodeWithTag("id_list_table").printToLog("DEBUG")
+      throw e
+    }
     check_for_row_in_list_table(row_text)
   }
 }

@@ -41,6 +41,8 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(projects.shared)
+      implementation(libs.kotlinx.coroutines)
+      implementation(libs.androidx.room.common)
     }
     // wait for Room to support web targets https://issuetracker.google.com/issues/336758416
     val nonWebMain by creating {

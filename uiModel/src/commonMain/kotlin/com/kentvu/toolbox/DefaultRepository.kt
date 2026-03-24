@@ -6,7 +6,11 @@ import com.kentvu.toolbox.models.Repository
 
 class DefaultRepository(private val localDataSource: DataSource, private val remoteDataSource: DataSource) : Repository {
   override suspend fun Item.Companion.count(): Int {
-    TODO("Not yet implemented")
+    return try {
+      remoteDataSource.itemsCount()
+    } catch (e: Exception) {
+      throw FallBackToLocalDataSourceException(localDataSource.itemsCount(), e)
+    }
   }
 
   override suspend fun Item.Companion.objects(): List<Item> {

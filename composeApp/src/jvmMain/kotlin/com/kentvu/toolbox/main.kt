@@ -3,7 +3,7 @@ package com.kentvu.toolbox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.application
 import com.kentvu.toolbox.client.RemoteDataSource
-import com.kentvu.toolbox.models.JvmRoomDatasource
+import com.kentvu.toolbox.data.JvmRoomDatasource
 
 fun main() = application {
     AppJvm(::exitApplication)
@@ -11,13 +11,14 @@ fun main() = application {
 
 @Composable
 fun AppJvm(onCloseRequest: () -> Unit = {}) {
-    val backend = DefaultModel(DefaultRepository(
-        JvmRoomDatasource(Environment.Production),
+    val environment: Environment = Environment.Production
+    val model = DefaultModel(DefaultRepository(
+        JvmRoomDatasource(environment),
         RemoteDataSource(),
     ))
     TodoWindow(
         onCloseRequest = onCloseRequest,
     ).content {
-        App(backend)
+        App(model)
     }
 }

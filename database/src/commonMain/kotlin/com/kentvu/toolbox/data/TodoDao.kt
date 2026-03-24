@@ -15,4 +15,7 @@ interface TodoDao {
 
   @Query("SELECT * FROM Item")
   fun getAllAsFlow(): Flow<List<Item>>
+
+  @Query("DELETE FROM Item")
+  suspend fun clear():Int
 }
