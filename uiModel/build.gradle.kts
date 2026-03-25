@@ -58,6 +58,7 @@ kotlin {
     jvmMain {
       dependsOn(nonWebMain)
       dependencies {
+        implementation(libs.kotest.assertions.core)
       }
     }
     jvmTest.dependencies {

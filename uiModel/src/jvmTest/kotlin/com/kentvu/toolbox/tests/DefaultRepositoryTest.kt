@@ -21,7 +21,7 @@ class DefaultRepositoryTest {
     val expected = listOf(Item("item 1"))
     coEvery { localDataSource.items() }.returns(expected)
     coEvery { remoteDataSource.items() }.throws(Exception())
-    val repository = DefaultRepository(localDataSource, remoteDataSource)
+    val repository = DefaultRepository(remoteDataSource, localDataSource)
     //var exception: Exception? = null
     //var result = Result.success(listOf<Item>())
 

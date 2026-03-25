@@ -60,6 +60,21 @@ class NewVisitorTest {
     //@Then("Satisfied, she goes back to sleep")
   }
 
+  @Test
+  fun test_start_a_new_todo_list_for_the_user() = runComposeUiTest {
+    //Given a blank to-do list
+    RemoteDataSource().itemsClear()
+    setContent { AppJvm() }
+    // Edith starts a new to-do list
+    val inputBox = onNodeWithTag("id_new_item")
+    inputBox.performTextInput("Buy peacock feathers")
+    inputBox.performImeAction()
+    wait_for_row_in_list_table("1: Buy peacock feathers")
+
+    // She notices that her list has a unique URL
+    onNodeWithTag("id_list_id").assert(!hasText(""))
+  }
+
   private fun ComposeUiTest.check_for_row_in_list_table(row_text: String) {
     onNodeWithTag("id_list_table")
       .onChildren()

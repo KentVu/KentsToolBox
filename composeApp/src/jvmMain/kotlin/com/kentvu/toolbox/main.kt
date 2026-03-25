@@ -13,8 +13,8 @@ fun main() = application {
 fun AppJvm(onCloseRequest: () -> Unit = {}) {
     val environment: Environment = Environment.Production
     val model = DefaultModel(DefaultRepository(
-        JvmRoomDatasource(environment),
         RemoteDataSource(),
+        JvmRoomDatasource(environment),
     ))
     TodoWindow(
         onCloseRequest = onCloseRequest,

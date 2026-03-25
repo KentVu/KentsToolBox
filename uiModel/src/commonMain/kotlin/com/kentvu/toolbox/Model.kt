@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Simulates a web Backend, but this only cares about the UI model, not the UI itself.
+ * Simulates a web Backend serving a REST-like API. This only cares about the UI model, not the
+ * UI itself.
  */
 interface Model {
     enum class Action {

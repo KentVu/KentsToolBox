@@ -6,8 +6,11 @@ import com.kentvu.toolbox.Environment
 import com.kentvu.toolbox.client.RemoteDataSource
 import com.kentvu.toolbox.data.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
-import com.kentvu.toolbox.models.CommonRoomDatasource
 import com.kentvu.toolbox.models.State
+import io.kotest.assertions.withClue
+import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.equals.shouldNotBeEqual
+import io.kotest.matchers.string.shouldMatch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -16,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 // HomePageTests
 class ModelTests {
@@ -24,7 +28,7 @@ class ModelTests {
   fun test_can_save_a_POST_request() = runTest {
     val datasource = JvmRoomDatasource(Environment.Test)
     val remoteDataSource = RemoteDataSource()
-    val repo = DefaultRepository(datasource, remoteDataSource)
+    val repo = DefaultRepository(remoteDataSource, datasource)
     val model = DefaultModel(repository = repo)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -52,20 +56,69 @@ class ModelTests {
   fun test_displays_all_list_items() = runTest {
     val datasource = JvmRoomDatasource(Environment.Test)
     val repo = DefaultRepository(datasource, datasource)
-    val backend = DefaultModel(repository = repo)
+    val model = DefaultModel(repository = repo)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      backend.state.toList(states)
+      model.state.toList(states)
     }
     with(repo) {
       Item(text = "itemey 1").save()
       Item(text = "itemey 2").save()
     }
 
-    backend.get("/")
+    model.get("/")
 
     assertContains(states.last().data, Item("itemey 1"))
     assertContains(states.last().data, Item("itemey 2"))
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun test_multiple_users_can_start_lists_at_different_urls() = runTest {
+    val datasource = JvmRoomDatasource(Environment.Test)
+    val remoteDataSource = RemoteDataSource()
+    val repo = DefaultRepository(remoteDataSource, datasource)
+    val model = DefaultModel(repository = repo)
+    remoteDataSource.itemsClear()
+    val states = mutableListOf<State>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      model.state.toList(states)
+    }
+
+    // Edith starts a new to-do list
+    model.post(
+      "/", Item(
+        text = "Buy peacock feathers"
+      )
+    )
+    assertContains(states.last().data, Item("Buy peacock feathers"))
+
+    // She notices that her list has a unique URL
+    withClue("Current page should has a unique URL") {
+      states.last().path shouldMatch Regex("/list/.+")
+    }
+    val edith_list_url = states.last().path
+    // Now a new user, Francis, comes along to the site.
+
+    //# We delete all the browser's cookies
+    //# as a way of simulating a brand-new user session
+    //## As REST-API is state-less, no need to reset cookie etc.
+    // Francis visits the home page.  There is no sign of Edith's list
+    model.get("/")
+    states.last().data shouldNotContain Item("Buy peacock feathers")
+    // Francis starts a new list by entering a new item. He
+    // is less interesting than Edith...
+    model.post("/", Item(text = "Buy milk"))
+    assertContains(states.last().data, Item("Buy milk"))
+    withClue("Francis gets his own unique URL") {
+      states.last().path shouldMatch Regex("/list/.+")
+    }
+    val francis_list_url = states.last().path
+    francis_list_url shouldNotBeEqual edith_list_url
+    //Again, there is no trace of Edith's list
+    states.last().data shouldNotContain Item("Buy peacock feathers")
+    assertContains(states.last().data, Item("Buy milk"))
+    //Satisfied, they both go back to sleep
   }
 
 }

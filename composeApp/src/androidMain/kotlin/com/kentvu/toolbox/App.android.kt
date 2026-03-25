@@ -9,8 +9,8 @@ import com.kentvu.toolbox.data.AndroidRoomDatasource
 @Composable
 fun AppAndroid() {
   val model = DefaultModel(DefaultRepository(
-    AndroidRoomDatasource(LocalContext.current),
     RemoteDataSource(),
+    AndroidRoomDatasource(LocalContext.current),
   ))
   App(model)
 }
