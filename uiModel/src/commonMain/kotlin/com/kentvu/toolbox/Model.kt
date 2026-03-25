@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
  * UI itself.
  */
 interface Model {
-    enum class Action {
-        Add
-    }
     val state: StateFlow<State>
 
     /** [item] should be some sort of "Request" type, but I'm trying to keep things simple. */

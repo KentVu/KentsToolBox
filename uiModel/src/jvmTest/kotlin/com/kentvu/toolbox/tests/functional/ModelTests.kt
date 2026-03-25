@@ -7,9 +7,11 @@ import com.kentvu.toolbox.client.RemoteDataSource
 import com.kentvu.toolbox.data.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
+import com.kentvu.toolbox.tests.FakeRepo
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.equals.shouldNotBeEqual
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
@@ -19,11 +21,26 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
-import kotlin.test.fail
 
 // HomePageTests
+@OptIn(ExperimentalCoroutinesApi::class)
 class ModelTests {
-  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun test_redirects_after_POST() = runTest {
+    // def test_redirects_after_POST(self):
+    // response = self.client.post("/", data={"item_text": "A new list item"})
+    // self.assertRedirects(response, "/")
+    val model = DefaultModel(repository = FakeRepo())
+    val states = mutableListOf<State>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      model.state.toList(states)
+    }
+    //When
+    model.post("/", Item(text = "A new list item"))
+    //Then
+    states.last().path shouldBe "/"
+  }
+
   @Test
   fun test_can_save_a_POST_request() = runTest {
     val datasource = JvmRoomDatasource(Environment.Test)
@@ -86,11 +103,7 @@ class ModelTests {
     }
 
     // Edith starts a new to-do list
-    model.post(
-      "/", Item(
-        text = "Buy peacock feathers"
-      )
-    )
+    model.post("/", Item(text = "Buy peacock feathers"))
     assertContains(states.last().data, Item("Buy peacock feathers"))
 
     // She notices that her list has a unique URL

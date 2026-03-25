@@ -104,6 +104,7 @@ kotlin {
             implementation(libs.cucumber.junit)
             implementation(libs.cucumber.junit.platform.engine)
             implementation(libs.junit.platform.suite)
+            implementation(libs.kotest.assertions.core)
             runtimeOnly("org.junit.platform:junit-platform-launcher")
         }
     }

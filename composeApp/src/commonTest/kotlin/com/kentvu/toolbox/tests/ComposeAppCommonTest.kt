@@ -16,6 +16,7 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.App
+import com.kentvu.toolbox.DefaultModel
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,9 +69,6 @@ class ComposeAppCommonTest {
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
     }
 
-    //  def test_redirects_after_POST(self):
-//    response = self.client.post("/", data={"item_text": "A new list item"})
-//    self.assertRedirects(response, "/")
     @Test
     fun test_redirects_after_POST() = runComposeUiTest {
         val state = MutableStateFlow(State())

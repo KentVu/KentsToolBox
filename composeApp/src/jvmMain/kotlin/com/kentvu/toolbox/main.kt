@@ -9,16 +9,19 @@ fun main() = application {
     AppJvm(::exitApplication)
 }
 
-@Composable
-fun AppJvm(onCloseRequest: () -> Unit = {}) {
+class AppJvm(val onCloseRequest: () -> Unit = {}) {
     val environment: Environment = Environment.Production
     val model = DefaultModel(DefaultRepository(
         RemoteDataSource(),
         JvmRoomDatasource(environment),
     ))
-    TodoWindow(
-        onCloseRequest = onCloseRequest,
-    ).content {
-        App(model)
+
+    @Composable
+    fun content() {
+        TodoWindow(
+            onCloseRequest = onCloseRequest,
+        ).content {
+            App(model)
+        }
     }
 }

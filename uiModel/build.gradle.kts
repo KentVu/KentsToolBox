@@ -58,11 +58,11 @@ kotlin {
     jvmMain {
       dependsOn(nonWebMain)
       dependencies {
-        implementation(libs.kotest.assertions.core)
       }
     }
     jvmTest.dependencies {
       implementation(libs.mockk)
+      implementation(libs.kotest.assertions.core)
     }
     commonTest.dependencies {
       implementation(libs.kotlin.test)

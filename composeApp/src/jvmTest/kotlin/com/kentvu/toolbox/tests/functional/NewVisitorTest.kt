@@ -6,6 +6,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -18,6 +19,11 @@ import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import com.kentvu.toolbox.AppJvm
 import com.kentvu.toolbox.client.RemoteDataSource
+import io.kotest.matchers.string.shouldMatch
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
@@ -28,7 +34,7 @@ class NewVisitorTest {
     //Given a blank to-do list
     RemoteDataSource().itemsClear()
     //@When("She goes to check out its homepage")
-    setContent { AppJvm() }
+    setContent { AppJvm().content() }
     //@Then("She notices the page title and header mention to-do lists")
     onNodeWithTag("header").run {
       assert(hasText("To-Do"))
@@ -64,7 +70,8 @@ class NewVisitorTest {
   fun test_start_a_new_todo_list_for_the_user() = runComposeUiTest {
     //Given a blank to-do list
     RemoteDataSource().itemsClear()
-    setContent { AppJvm() }
+    val appJvm = AppJvm()
+    setContent { appJvm.content() }
     // Edith starts a new to-do list
     val inputBox = onNodeWithTag("id_new_item")
     inputBox.performTextInput("Buy peacock feathers")
@@ -73,6 +80,10 @@ class NewVisitorTest {
 
     // She notices that her list has a unique URL
     onNodeWithTag("id_list_id").assert(!hasText(""))
+    appJvm.model.state.value.path shouldMatch Regex("/list/.+")
+    val list_id = appJvm.model.state.value.path.removePrefix("/list/")
+    onNodeWithTag("id_list_id").assertTextContains(list_id)
+      .assertIsDisplayed()
   }
 
   private fun ComposeUiTest.check_for_row_in_list_table(row_text: String) {
