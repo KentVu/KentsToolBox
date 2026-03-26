@@ -14,6 +14,7 @@ fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<AppDatabase> {
   )
 }
 
+@Suppress("FunctionName") // Factory function
 fun AndroidRoomDatasource(context: Context): CommonRoomDatasource {
   val dbBuilder: RoomDatabase.Builder<AppDatabase> = getDatabaseBuilder(context)
   return CommonRoomDatasource(dbBuilder)

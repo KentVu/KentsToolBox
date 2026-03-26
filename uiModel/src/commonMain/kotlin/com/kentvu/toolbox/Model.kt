@@ -27,7 +27,7 @@ interface Model {
         }
 
         override suspend fun get(path: String) {
-            _state.value = State("/", listOf(Item("Buy peacock feathers")))
+            _state.value = State("/lists/a-list/", listOf(Item("Buy peacock feathers")))
         }
     }
 }

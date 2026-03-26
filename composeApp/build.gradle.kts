@@ -58,6 +58,8 @@ kotlin {
     
     sourceSets {
         androidMain.dependencies {
+            // App.android.kt entry point for android app needs Database.android.kt
+            implementation(projects.database)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
         }

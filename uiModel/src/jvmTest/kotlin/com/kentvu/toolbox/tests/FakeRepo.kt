@@ -4,16 +4,17 @@ import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Repository
 
 class FakeRepo: Repository {
+  val items = mutableListOf<Item>()
   override suspend fun Item.Companion.count(): Int {
-    TODO("Not yet implemented")
+    return items.count()
   }
 
   override suspend fun Item.Companion.objects(): List<Item> {
-    TODO("Not yet implemented")
+    return items
   }
 
   override suspend fun Item.save() {
-    println("To be saved: $this")
+    items.add(this)
   }
 
 }

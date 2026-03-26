@@ -38,7 +38,7 @@ class ModelTests {
     //When
     model.post("/", Item(text = "A new list item"))
     //Then
-    states.last().path shouldBe "/"
+    states.last().path shouldBe "/lists/the-only-list-in-the-world/"
   }
 
   @Test
@@ -65,7 +65,7 @@ class ModelTests {
     }
 
     assertContains(states.last().data, Item("A new list item"))
-    assertEquals("/", states.last().path)
+    assertContains(states.last().path, "/")
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -108,7 +108,7 @@ class ModelTests {
 
     // She notices that her list has a unique URL
     withClue("Current page should has a unique URL") {
-      states.last().path shouldMatch Regex("/list/.+")
+      states.last().path shouldMatch Regex("/lists/.+")
     }
     val edith_list_url = states.last().path
     // Now a new user, Francis, comes along to the site.

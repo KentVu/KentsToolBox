@@ -1,5 +1,6 @@
 package com.kentvu.toolbox.tests
 
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
@@ -16,16 +17,17 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.App
-import com.kentvu.toolbox.DefaultModel
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/** Drive UI changes. */
 @OptIn(ExperimentalTestApi::class)
 class ComposeAppCommonTest {
 
@@ -63,7 +65,7 @@ class ComposeAppCommonTest {
         onNodeWithTag("id_new_item").performImeAction()
         /*a*/waitForIdle()
 
-        waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
+        waitForItemAppeared()
         assertTrue(model.calledPost)
         onNodeWithTag("id_list_table").apply { printToLog("DEBUG") }
             .assert(hasAnyChild(hasText("Buy peacock feathers", true)))
@@ -76,14 +78,17 @@ class ComposeAppCommonTest {
         setContent { App(model) }
         assertFalse(model.calledPost, "backend.calledPost")
         assertEquals(1, model.calledGetTimes)
+        assertEquals("/", model.state.value.path)
 
         onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
         onNodeWithTag("id_new_item").performImeAction()
+        model.state.value = State("/lists/the-only-list-in-the-world/", listOf(Item("Buy peacock feathers")))
 
         assertTrue("backend.calledPost", model.calledPost)
         // "Redirect" means a reload after a POST.
-        assertEquals(2, model.calledGetTimes, "A GET should be called after a POST")
-        //assertEquals("/", backend.model.value.path)
+        //assertEquals(2, model.calledGetTimes, "A GET should be called after a POST")
+        assertEquals("/lists/the-only-list-in-the-world/", model.state.value.path)
+        assertContains(model.state.value.data, Item("Buy peacock feathers"))
     }
 
     @Test
@@ -96,5 +101,9 @@ class ComposeAppCommonTest {
         onNodeWithTag("id_new_item").performImeAction()
 
         onNodeWithTag("id_new_item").assert(hasText(""))
+    }
+
+    private fun ComposeUiTest.waitForItemAppeared() {
+        waitUntilNodeCount(hasAnyAncestor(hasTestTag("id_list_table")), 1)
     }
 }

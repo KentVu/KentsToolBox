@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -55,26 +56,31 @@ fun AppPreview() {
 @Composable
 fun App(model: Model) {
     MaterialTheme {
+        val state by model.state.collectAsState()
         Scaffold(
             Modifier.safeContentPadding(),
             topBar = {
-                TopAppBar(title = { Text("To-Do", Modifier.testTag("header")) })
+                TopAppBar(title = { Row {
+                    Text("To-Do", Modifier.testTag("header"))
+                    Text(" - ")
+                    Text(state.path.removePrefix("/lists/").removeSuffix("/"), Modifier.testTag("id_list_id"))
+                } })
             },
         ) { paddingValues ->
             LaunchedEffect(Unit) {
                 model.get("/")
             }
-            val state by model.state.collectAsState()
             when (state.path) {
                 "/" -> Home(Modifier.padding(paddingValues), state.data) {
                     model.post(state.path, Item(it))
-                    // simulate a "redirect".
-                    model.get("/")
                 }
 
-                "/second" -> Text(
-                    "Second screen",
-                    Modifier.semantics { contentDescription = "Second screen" })
+                // 7.5. Getting Back to a Working State as Quickly as Possible
+                "/lists/the-only-list-in-the-world/" -> Home(Modifier.padding(paddingValues), state.data) {
+                    model.post(state.path, Item(it))
+                }
+
+                else -> error("Unknown path: ${state.path}")
             }
 
         }

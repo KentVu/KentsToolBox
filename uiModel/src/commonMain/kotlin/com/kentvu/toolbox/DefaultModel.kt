@@ -15,7 +15,10 @@ class DefaultModel(
     val items = with(repository) {
       Item.objects()
     }
-    state.value = State("/", items)
+    if (path == "/") // the Home "View"
+      state.value = State("/", items)
+    else // the List "View"
+      state.value = State(path, items)
   }
 
   override suspend fun post(
@@ -26,7 +29,8 @@ class DefaultModel(
     with(repository) {
       item.save()
     }
-    // notifies downstream (UI)
-    state.value = State("/", listOf(item))
+    // notifies downstream (UI) ("redirect")
+    //state.value = State("/lists/the-only-list-in-the-world/", listOf(item))
+    get("/lists/the-only-list-in-the-world/")
   }
 }

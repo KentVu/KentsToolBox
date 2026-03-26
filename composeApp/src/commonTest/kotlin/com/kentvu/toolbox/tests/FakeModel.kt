@@ -19,6 +19,7 @@ class FakeModel(
     }
 
     override suspend fun get(path: String) {
+        state.value = state.value.copy(path = path)
         calledGetTimes++
     }
 

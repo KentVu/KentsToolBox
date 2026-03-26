@@ -3,8 +3,10 @@ package com.kentvu.toolbox.tests
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.runComposeUiTest
 import com.kentvu.toolbox.App
+import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.test.Test
@@ -12,7 +14,6 @@ import kotlin.test.Test
 @OptIn(ExperimentalTestApi::class)
 class NavigationTests {
 
-  // TODO replace with actual second screen when we have it.
   @Test
   fun testBackendNavigation() = runComposeUiTest {
     val backend = FakeModel(
@@ -22,8 +23,8 @@ class NavigationTests {
     onNodeWithContentDescription("Home screen").assertIsDisplayed()
 
 
-    backend.state.value = State(path = "/second", emptyList())
+    backend.state.value = State(path = "/lists/the-only-list-in-the-world/", listOf(Item("A list item")))
     //backend.backstack.add("/second")
-    onNodeWithContentDescription("Second screen").assertIsDisplayed()
+    onNodeWithText("A list item", true).assertIsDisplayed()
   }
 }

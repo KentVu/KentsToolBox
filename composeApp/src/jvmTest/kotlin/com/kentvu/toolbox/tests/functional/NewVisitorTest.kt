@@ -55,8 +55,7 @@ class NewVisitorTest {
     //inputBox.performKeyInput { Key.Enter }
     wait_for_row_in_list_table("1: Buy peacock feathers")
     //There is still a text box inviting her to add another item.
-    //She enters "Use peacock feathers to make a fly"
-    // (Edith is very methodical)
+    //She enters "Use peacock feathers to make a fly" (Edith is very methodical)
     inputBox = onNodeWithTag("id_new_item")
     inputBox.performTextInput("Use peacock feathers to make a fly")
     inputBox.performImeAction()
@@ -79,9 +78,9 @@ class NewVisitorTest {
     wait_for_row_in_list_table("1: Buy peacock feathers")
 
     // She notices that her list has a unique URL
-    onNodeWithTag("id_list_id").assert(!hasText(""))
-    appJvm.model.state.value.path shouldMatch Regex("/list/.+")
-    val list_id = appJvm.model.state.value.path.removePrefix("/list/")
+    onNodeWithTag("id_list_id").assert(!hasText("")) { "list id should not empty" }
+    appJvm.model.state.value.path shouldMatch Regex("/lists/.+")
+    val list_id = appJvm.model.state.value.path.removePrefix("/lists/").removeSuffix("/")
     onNodeWithTag("id_list_id").assertTextContains(list_id)
       .assertIsDisplayed()
   }
@@ -95,7 +94,8 @@ class NewVisitorTest {
     try {
       waitUntilAtLeastOneExists(hasText(row_text))
     } catch (e: ComposeTimeoutException) {
-      onNodeWithTag("id_list_table").printToLog("DEBUG")
+      // ignore error in logging code
+      runCatching { onNodeWithTag("id_list_table").printToLog("DEBUG") }
       throw e
     }
     check_for_row_in_list_table(row_text)

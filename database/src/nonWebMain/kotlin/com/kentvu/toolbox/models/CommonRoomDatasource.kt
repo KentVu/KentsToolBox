@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.first
 
 /** Beware the parameter [db] default value uses **[Room.inMemoryDatabaseBuilder]** */
 class CommonRoomDatasource(
-  dbBuilder: RoomDatabase.Builder<AppDatabase> = Room.inMemoryDatabaseBuilder()
+  dbBuilder: RoomDatabase.Builder<AppDatabase>// = Room.inMemoryDatabaseBuilder()
 ) : DataSource {
 
   val db = getRoomDatabase(dbBuilder)

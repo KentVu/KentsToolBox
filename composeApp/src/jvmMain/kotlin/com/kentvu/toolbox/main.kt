@@ -6,7 +6,7 @@ import com.kentvu.toolbox.client.RemoteDataSource
 import com.kentvu.toolbox.data.JvmRoomDatasource
 
 fun main() = application {
-    AppJvm(::exitApplication)
+    AppJvm(::exitApplication).content()
 }
 
 class AppJvm(val onCloseRequest: () -> Unit = {}) {
