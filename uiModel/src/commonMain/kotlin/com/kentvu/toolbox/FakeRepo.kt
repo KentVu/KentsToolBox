@@ -1,4 +1,4 @@
-package com.kentvu.toolbox.tests
+package com.kentvu.toolbox
 
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.Repository

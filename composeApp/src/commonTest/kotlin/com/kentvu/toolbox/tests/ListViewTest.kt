@@ -1,12 +1,12 @@
 package com.kentvu.toolbox.tests
 
+import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
-import com.kentvu.toolbox.App
+import com.kentvu.toolbox.ui.App
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,9 +34,17 @@ import kotlin.test.Test
 class ListViewTest {
 
   @Test
-  fun test_renders_input_form() = runComposeUiTest {
+  fun test_uses_list_template() = runComposeUiTest {
     val state = MutableStateFlow(State(path = "/lists/the-only-list-in-the-world/"))
     val model = FakeModel(state)
+    setContent { App(model) }
+    assertTemplateUsed("list.html")
+  }
+
+  @Test
+  fun test_renders_input_form() = runComposeUiTest {
+    val state = MutableStateFlow(State(path = "/lists/the-only-list-in-the-world/"))
+    val model = FakeModel(MutableStateFlow(State(path = "/lists/the-only-list-in-the-world/")))
     setContent { App(model) }
     onNodeWithTag("id_new_item").assertIsDisplayed()
   }
@@ -54,6 +62,10 @@ class ListViewTest {
     setContent { App(model) }
     onNodeWithText("itemey 1", true).assertIsDisplayed()
     onNodeWithText("itemey 2", true).assertIsDisplayed()
+  }
+
+  private fun ComposeUiTest.assertTemplateUsed(templateName: String) {
+    onNodeWithTag(templateName).assertIsDisplayed()
   }
 
 }

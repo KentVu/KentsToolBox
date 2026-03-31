@@ -7,9 +7,10 @@ import com.kentvu.toolbox.client.RemoteDataSource
 import com.kentvu.toolbox.data.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
-import com.kentvu.toolbox.tests.FakeRepo
+import com.kentvu.toolbox.FakeRepo
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldNotContain
+import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
@@ -68,25 +69,27 @@ class ModelTests {
     assertContains(states.last().path, "/")
   }
 
-  @OptIn(ExperimentalCoroutinesApi::class)
-  @Test
-  fun test_displays_all_list_items() = runTest {
-    val datasource = JvmRoomDatasource(Environment.Test)
-    val repo = DefaultRepository(datasource, datasource)
-    val model = DefaultModel(repository = repo)
-    val states = mutableListOf<State>()
-    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      model.state.toList(states)
-    }
-    with(repo) {
-      Item(text = "itemey 1").save()
-      Item(text = "itemey 2").save()
-    }
+  class ListView {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_displays_all_list_items() = runTest {
+      val datasource = JvmRoomDatasource(Environment.Test)
+      val repo = DefaultRepository(datasource, datasource)
+      val model = DefaultModel(repository = repo)
+      val states = mutableListOf<State>()
+      backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+        model.state.toList(states)
+      }
+      with(repo) {
+        Item(text = "itemey 1").save()
+        Item(text = "itemey 2").save()
+      }
 
-    model.get("/")
+      model.get("/lists/the-only-list-in-the-world/")
 
-    assertContains(states.last().data, Item("itemey 1"))
-    assertContains(states.last().data, Item("itemey 2"))
+      assertContains(states.last().data, Item("itemey 1"))
+      assertContains(states.last().data, Item("itemey 2"))
+    }
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -123,8 +126,9 @@ class ModelTests {
     // is less interesting than Edith...
     model.post("/", Item(text = "Buy milk"))
     assertContains(states.last().data, Item("Buy milk"))
+    states.last().data.first() shouldBeEqual Item("Buy milk")
     withClue("Francis gets his own unique URL") {
-      states.last().path shouldMatch Regex("/list/.+")
+      states.last().path shouldMatch Regex("/lists/.+")
     }
     val francis_list_url = states.last().path
     francis_list_url shouldNotBeEqual edith_list_url

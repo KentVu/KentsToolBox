@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Simulates a web Backend serving a REST-like API. This only cares about the UI model, not the
  * UI itself.
+ * A new state should be updated after each [get]/[post] call to simulate a new URL.
  */
 interface Model {
     val state: StateFlow<State>
@@ -27,7 +28,7 @@ interface Model {
         }
 
         override suspend fun get(path: String) {
-            _state.value = State("/lists/a-list/", listOf(Item("Buy peacock feathers")))
+            _state.value = State("/lists/the-only-list-in-the-world/", listOf(Item("Buy peacock feathers")))
         }
     }
 }

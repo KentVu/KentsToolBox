@@ -4,7 +4,7 @@ import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
-import com.kentvu.toolbox.App
+import com.kentvu.toolbox.ui.App
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.cucumber.java.PendingException
 import io.cucumber.java.en.Then

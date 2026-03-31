@@ -16,7 +16,7 @@ class DefaultModel(
       Item.objects()
     }
     if (path == "/") // the Home "View"
-      state.value = State("/", items)
+      state.value = State("/", emptyList())
     else // the List "View"
       state.value = State(path, items)
   }
@@ -33,4 +33,5 @@ class DefaultModel(
     //state.value = State("/lists/the-only-list-in-the-world/", listOf(item))
     get("/lists/the-only-list-in-the-world/")
   }
+
 }
