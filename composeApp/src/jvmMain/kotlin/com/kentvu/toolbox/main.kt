@@ -12,7 +12,7 @@ fun main() = application {
 
 class AppJvm(
   val onCloseRequest: () -> Unit = {},
-  val model: DefaultModel = DefaultModel(
+  val model: DefaultHttpModel = DefaultHttpModel(
     DefaultRepository(
       RemoteDataSource(),
       JvmRoomDatasource(Environment.Production),
@@ -20,12 +20,14 @@ class AppJvm(
   )
 ) {
 
+  val view = View.Default(model)
+
   @Composable
   fun content() {
     TodoWindow(
       onCloseRequest = onCloseRequest,
     ).content {
-      App(model)
+      App(view)
     }
   }
 }

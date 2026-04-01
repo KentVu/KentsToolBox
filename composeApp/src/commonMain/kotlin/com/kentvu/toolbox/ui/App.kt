@@ -14,27 +14,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import com.kentvu.toolbox.Model
+import com.kentvu.toolbox.HttpModel
+import com.kentvu.toolbox.View
 import com.kentvu.toolbox.models.Item
 import kotlinx.coroutines.launch
 
 @Composable
 @Preview
 fun AppPreview() {
-  App(Model.Preview())
+  App(View.Default(HttpModel.Preview()))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(model: Model) {
+fun App(view: View) {
   MaterialTheme {
-    val state by model.state.collectAsState()
+    val state by view.state.collectAsState()
     LaunchedEffect(Unit) {
-      model.get(state.path)
+      view.onInit()
     }
     when (state.path) {
       "/" -> Home {
-        model.post("/", Item(it))
+        view.handleNewItemSubmit(it)
       }
 
       // 7.5. Getting Back to a Working State as Quickly as Possible
@@ -43,7 +44,7 @@ fun App(model: Model) {
         listId = state.path.removePrefix("/lists/").removeSuffix("/"),
         state.data
       ) {
-        model.post("/", Item(it))
+        view.handleNewItemSubmit(it)
       }
 
       else -> error("Unknown path: ${state.path}")

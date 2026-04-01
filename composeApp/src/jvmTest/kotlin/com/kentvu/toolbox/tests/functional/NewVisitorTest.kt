@@ -20,24 +20,15 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import com.kentvu.toolbox.AppJvm
-import com.kentvu.toolbox.DefaultModel
-import com.kentvu.toolbox.DefaultRepository
 import com.kentvu.toolbox.client.RemoteDataSource
-import com.kentvu.toolbox.data.InMemDataSource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
-import com.kentvu.toolbox.ui.App
 import io.kotest.assertions.withClue
 import io.kotest.matchers.collections.shouldNotContain
-import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
 import io.kotest.matchers.string.shouldMatch
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlin.test.Test
-import kotlin.test.assertContains
 
 @OptIn(ExperimentalTestApi::class)
 class NewVisitorTest {
@@ -92,8 +83,8 @@ class NewVisitorTest {
 
     // She notices that her list has a unique URL
     onNodeWithTag("id_list_id").assert(!hasText("")) { "list id should not empty" }
-    appJvm.model.state.value.path shouldMatch Regex("/lists/.+")
-    val list_id = appJvm.model.state.value.path.removePrefix("/lists/").removeSuffix("/")
+    appJvm.view.state.value.path shouldMatch Regex("/lists/.+")
+    val list_id = appJvm.view.state.value.path.removePrefix("/lists/").removeSuffix("/")
     onNodeWithTag("id_list_id").assertTextContains(list_id)
       .assertIsDisplayed()
   }
@@ -106,7 +97,7 @@ class NewVisitorTest {
     val appJvm = AppJvm()
     setContent {
       LaunchedEffect(1) {
-        appJvm.model.state.toList(states)
+        appJvm.view.state.toList(states)
       }
       appJvm.content()
     }

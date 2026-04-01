@@ -6,14 +6,14 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.runComposeUiTest
-import com.kentvu.toolbox.DefaultModel
+import com.kentvu.toolbox.DefaultHttpModel
 import com.kentvu.toolbox.DefaultRepository
+import com.kentvu.toolbox.View
 import com.kentvu.toolbox.data.InMemDataSource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import com.kentvu.toolbox.ui.App
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -25,18 +25,20 @@ class NewListTest {
   fun test_can_save_a_POST_request() = runComposeUiTest {
     val fakeDataSource = InMemDataSource()
     val repo = DefaultRepository(fakeDataSource, InMemDataSource())
-    val model = DefaultModel(repo)
+    val model = DefaultHttpModel(repo)
     val states = mutableListOf<State>()
     setContent {
+      val view = View.Default(model)
       LaunchedEffect(1) {
-        model.state.toList(states)
+        view.state.toList(states)
       }
-      App(model)
+      App(view)
     }
     // self.client.post("/lists/new", data={"item_text": "A new list item"})???
 
     onNodeWithTag("id_new_item").performTextInput("A new list item")
     onNodeWithTag("id_new_item").performImeAction()
+    awaitIdle()
     with(repo) {
       assertEquals(1, fakeDataSource.itemsCount())
       val new_item = Item.objects().first()
@@ -51,12 +53,13 @@ class NewListTest {
   fun test_redirects_after_POST() = runComposeUiTest {
     val fakeDataSource = InMemDataSource()
     val repo = DefaultRepository(fakeDataSource, InMemDataSource())
-    val model = DefaultModel(repo)
-    setContent { App(model) }
-    assertEquals("/", model.state.value.path)
+    val model = DefaultHttpModel(repo)
+    val view = View.Default(model)
+    setContent { App(view) }
+    assertEquals("/", view.state.value.path)
     onNodeWithTag("id_new_item").performTextInput("Buy peacock feathers")
     onNodeWithTag("id_new_item").performImeAction()
-    assertEquals("/lists/the-only-list-in-the-world/", model.state.value.path)
+    assertEquals("/lists/the-only-list-in-the-world/", view.state.value.path)
   }
 
 }

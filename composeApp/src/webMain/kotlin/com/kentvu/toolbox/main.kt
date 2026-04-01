@@ -9,7 +9,7 @@ fun main() {
     val localDataSource = JsDatasource()
     ComposeViewport {
       App(
-        DefaultModel(
+        DefaultHttpModel(
           DefaultRepository(localDataSource, localDataSource)
         )
       )

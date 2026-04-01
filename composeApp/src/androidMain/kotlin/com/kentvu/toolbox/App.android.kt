@@ -9,7 +9,7 @@ import com.kentvu.toolbox.ui.App
 
 @Composable
 fun AppAndroid() {
-  val model = DefaultModel(DefaultRepository(
+  val model = DefaultHttpModel(DefaultRepository(
     RemoteDataSource(),
     AndroidRoomDatasource(LocalContext.current),
   ))
@@ -19,5 +19,5 @@ fun AppAndroid() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-  App(Model.Preview())
+  App(HttpModel.Preview())
 }

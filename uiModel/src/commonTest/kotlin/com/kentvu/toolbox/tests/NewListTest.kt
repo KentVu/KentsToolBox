@@ -1,8 +1,7 @@
 package com.kentvu.toolbox.tests
 
-import com.kentvu.toolbox.DefaultModel
+import com.kentvu.toolbox.DefaultHttpModel
 import com.kentvu.toolbox.DefaultRepository
-import com.kentvu.toolbox.FakeRepo
 import com.kentvu.toolbox.data.InMemDataSource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
@@ -18,7 +17,7 @@ class NewListTest {
   fun test_can_save_a_POST_request() = runTest {
     val fakeDataSource = InMemDataSource()
     val repo = DefaultRepository(fakeDataSource, InMemDataSource())
-    val model = DefaultModel(repo)
+    val model = DefaultHttpModel(repo)
     model.post("/lists/new", Item(text = "A new list item"))
     with(repo) {
       val objects = Item.objects()
@@ -32,15 +31,11 @@ class NewListTest {
     // def test_redirects_after_POST(self):
     // response = self.client.post("/", data={"item_text": "A new list item"})
     // self.assertRedirects(response, "/")
-    val model = DefaultModel(repository = DefaultRepository(InMemDataSource(), InMemDataSource()))
-    val states = mutableListOf<State>()
-    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      model.state.toList(states)
-    }
+    val model = DefaultHttpModel(repository = DefaultRepository(InMemDataSource(), InMemDataSource()))
     //When
-    model.post("/lists/new", Item(text = "A new list item"))
+    val response = model.post("/lists/new", Item(text = "A new list item"))
     //Then
-    assertEquals("/lists/the-only-list-in-the-world/", states.last().path)
+    assertEquals("/lists/the-only-list-in-the-world/", response.path)
   }
 
 }

@@ -1,18 +1,17 @@
 package com.kentvu.toolbox.tests.functional
 
-import com.kentvu.toolbox.DefaultModel
+import com.kentvu.toolbox.DefaultHttpModel
 import com.kentvu.toolbox.DefaultRepository
 import com.kentvu.toolbox.Environment
+import com.kentvu.toolbox.View
 import com.kentvu.toolbox.client.RemoteDataSource
 import com.kentvu.toolbox.data.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
-import com.kentvu.toolbox.FakeRepo
 import io.kotest.assertions.asClue
 import io.kotest.assertions.withClue
 import io.kotest.inspectors.forOne
 import io.kotest.matchers.collections.shouldNotContain
-import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
@@ -33,15 +32,11 @@ class ModelTests {
     val datasource = JvmRoomDatasource(Environment.Test)
     val remoteDataSource = RemoteDataSource()
     val repo = DefaultRepository(remoteDataSource, datasource)
-    val model = DefaultModel(repository = repo)
-    val states = mutableListOf<State>()
-    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      model.state.toList(states)
-    }
+    val model = DefaultHttpModel(repository = repo)
     remoteDataSource.itemsClear()
 
-    model.post(
-      "/", Item(
+    val response = model.post(
+      "/lists/new", Item(
         text = "A new list item"
       )
     )
@@ -51,8 +46,8 @@ class ModelTests {
       assertEquals("A new list item", new_item.text)
     }
 
-    assertContains(states.last().data, Item("A new list item"))
-    assertContains(states.last().path, "/")
+    assertContains(response.data, Item("A new list item"))
+    assertContains(response.path, "/")
   }
 
   class ListView {
@@ -61,20 +56,16 @@ class ModelTests {
     fun test_displays_all_list_items() = runTest {
       val datasource = JvmRoomDatasource(Environment.Test)
       val repo = DefaultRepository(datasource, datasource)
-      val model = DefaultModel(repository = repo)
-      val states = mutableListOf<State>()
-      backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-        model.state.toList(states)
-      }
+      val model = DefaultHttpModel(repository = repo)
       with(repo) {
         Item(text = "itemey 1").save()
         Item(text = "itemey 2").save()
       }
 
-      model.get("/lists/the-only-list-in-the-world/")
+      val response = model.get("/lists/the-only-list-in-the-world/")
 
-      assertContains(states.last().data, Item("itemey 1"))
-      assertContains(states.last().data, Item("itemey 2"))
+      assertContains(response.data, Item("itemey 1"))
+      assertContains(response.data, Item("itemey 2"))
     }
   }
 
@@ -84,15 +75,17 @@ class ModelTests {
     val datasource = JvmRoomDatasource(Environment.Test)
     val remoteDataSource = RemoteDataSource()
     val repo = DefaultRepository(remoteDataSource, datasource)
-    val model = DefaultModel(repository = repo)
-    remoteDataSource.itemsClear()
+    val model = DefaultHttpModel(repository = repo)
+    val view = View.Default(model)
     val states = mutableListOf<State>()
     backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      model.state.toList(states)
+      view.state.toList(states)
     }
+    remoteDataSource.itemsClear()
 
     // Edith starts a new to-do list
-    model.post("/", Item(text = "Buy peacock feathers"))
+    val francis_list_url: String
+    view.handleNewItemSubmit("Buy peacock feathers")
     assertContains(states.last().data, Item("Buy peacock feathers"))
 
     // She notices that her list has a unique URL
@@ -106,24 +99,25 @@ class ModelTests {
     //# as a way of simulating a brand-new user session
     //## As REST-API is state-less, no need to reset cookie etc.
     // Francis visits the home page.  There is no sign of Edith's list
-    model.get("/")
+    //view = View.Default(model)
+    view.onInit()
     states.last().data shouldNotContain Item("Buy peacock feathers")
     // Francis starts a new list by entering a new item. He
     // is less interesting than Edith...
-    model.post("/", Item(text = "Buy milk"))
+    view.handleNewItemSubmit("Buy milk")
     assertContains(states.last().data, Item("Buy milk"))
     "'Buy milk' should be first in the list!".asClue {
       states.last().data.mapIndexed(::Pair).forOne { (id, it) ->
         id shouldBe 0; it shouldBe Item("Buy milk")
       }
       /*.mapIndexed { id, it ->
-        id == 0 && it == Item("Buy milk")
-      }.forOne { it shouldBe true }*/
+      id == 0 && it == Item("Buy milk")
+    }.forOne { it shouldBe true }*/
     }
     withClue("Francis gets his own unique URL") {
       states.last().path shouldMatch Regex("/lists/.+")
     }
-    val francis_list_url = states.last().path
+    francis_list_url = states.last().path
     francis_list_url shouldNotBeEqual edith_list_url
     //Again, there is no trace of Edith's list
     states.last().data shouldNotContain Item("Buy peacock feathers")

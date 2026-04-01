@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
 import com.kentvu.toolbox.ui.App
-import com.kentvu.toolbox.Model
+import com.kentvu.toolbox.HttpModel
 import com.kentvu.toolbox.TodoWindow
+import com.kentvu.toolbox.View
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -26,7 +27,7 @@ class JvmAdditionalTests {
   @OptIn(ExperimentalTestApi::class)
   @Test
   fun windowsShouldHaveRightTitle() = runComposeUiTest {
-    setContent { PlatformContentWrapper { App(Model.Preview()) } }
+    setContent { PlatformContentWrapper { App(View.Default(HttpModel.Preview())) } }
     platformSpecificAssertions()
   }
 }
