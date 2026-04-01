@@ -47,12 +47,12 @@ class NewVisitorTest {
     //Given a blank to-do list
     RemoteDataSource().itemsClear()
     //@When("She goes to check out its homepage")
-    setContent { AppJvm().content() }
+    val appJvm = AppJvm()
+    setContent { appJvm.content() }
     //@Then("She notices the page title and header mention to-do lists")
     onNodeWithTag("header").run {
       assert(hasText("To-Do"))
         .assertIsDisplayed()
-      //onAncestors().onLast().printToLog("DEBUG")
     }
     //@Then("She is invited to enter a to-do item straight away")
     onNodeWithTag("id_new_item", true)

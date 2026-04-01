@@ -4,29 +4,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
-import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.runComposeUiTest
 import androidx.compose.ui.test.waitUntilNodeCount
 import com.kentvu.toolbox.DefaultModel
 import com.kentvu.toolbox.DefaultRepository
-import com.kentvu.toolbox.FakeRepo
 import com.kentvu.toolbox.data.InMemDataSource
 import com.kentvu.toolbox.ui.App
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
-import io.kotest.assertions.withClue
-import io.kotest.matchers.string.shouldMatch
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -34,7 +28,7 @@ import kotlin.test.assertTrue
 
 /** Drive UI changes. */
 @OptIn(ExperimentalTestApi::class)
-class ComposeAppCommonTest {
+class HomePageTest : TodoUnitTest() {
 
   @Test //the "contract" between the frontend and the backend.
   fun ensureBackendGetIsCalledOnInit() = runComposeUiTest {
@@ -61,30 +55,31 @@ class ComposeAppCommonTest {
   }
 
   @Test
-  fun test_can_save_a_POST_request() = runComposeUiTest {
+  fun test_uses_home_template() = runComposeUiTest {
     val fakeDataSource = InMemDataSource()
     val repo = DefaultRepository(fakeDataSource, InMemDataSource())
     val model = DefaultModel(repo)
-    val states = mutableListOf<State>()
-    setContent {
-      LaunchedEffect(1) {
-        model.state.toList(states)
-      }
-      App(model)
-    }
-    //coroutineScope { launch {} }
-    //backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {}
+    setContent { App(model) }
+    assertEquals("/", model.state.value.path)
+    assertTemplateUsed("home.html")
+  }
 
-    onNodeWithTag("id_new_item").performTextInput("A new list item")
-    onNodeWithTag("id_new_item").performImeAction()
+  @Test
+  fun test_renders_input_form() = runComposeUiTest {
+    val model = FakeModel(MutableStateFlow(State(path = "/")))
+    setContent { App(model) }
+    onNodeWithTag("id_new_item").assertIsDisplayed()
+  }
+
+  @Test
+  fun test_only_saves_items_when_necessary() = runComposeUiTest {
+    val fakeDataSource = InMemDataSource()
+    val repo = DefaultRepository(fakeDataSource, InMemDataSource())
+    val model = DefaultModel(repo)
+    setContent { App(model) }
     with(repo) {
-      assertEquals(1, fakeDataSource.itemsCount())
-      val new_item = Item.objects().first()
-      assertEquals("A new list item", new_item.text)
+      assertEquals(0, Item.objects().count())
     }
-
-    assertContains(states.last().data, Item("A new list item"))
-    assertContains(states.last().path, "/lists/the-only-list-in-the-world/")
   }
 
   @Test

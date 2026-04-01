@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class DefaultModel(
   private val repository: Repository,
-  /*private val coroutineScope: CoroutineScope,*/
 ) : Model {
   override val state = MutableStateFlow(State())
 
@@ -25,12 +24,33 @@ class DefaultModel(
     path: String,
     item: Item
   ) {
-    //coroutineScope.launch {}
+    when (path) {
+      "/" -> {
+        handlePostRoot(item)
+      }
+
+      "/lists/new" -> {
+        new_list(item)
+      }
+
+      else
+        -> throw Exception("Unknown path: $path")
+    }
+  }
+
+  private suspend fun handlePostRoot(item: Item) {
     with(repository) {
       item.save()
     }
     // notifies downstream (UI) ("redirect")
     //state.value = State("/lists/the-only-list-in-the-world/", listOf(item))
+    get("/lists/the-only-list-in-the-world/")
+  }
+
+  private suspend fun new_list(item: Item) {
+    with(repository) {
+      item.save()
+    }
     get("/lists/the-only-list-in-the-world/")
   }
 

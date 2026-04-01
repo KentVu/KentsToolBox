@@ -8,7 +8,9 @@ import com.kentvu.toolbox.data.JvmRoomDatasource
 import com.kentvu.toolbox.models.Item
 import com.kentvu.toolbox.models.State
 import com.kentvu.toolbox.FakeRepo
+import io.kotest.assertions.asClue
 import io.kotest.assertions.withClue
+import io.kotest.inspectors.forOne
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.equals.shouldNotBeEqual
@@ -26,22 +28,6 @@ import kotlin.test.assertEquals
 // HomePageTests
 @OptIn(ExperimentalCoroutinesApi::class)
 class ModelTests {
-  @Test
-  fun test_redirects_after_POST() = runTest {
-    // def test_redirects_after_POST(self):
-    // response = self.client.post("/", data={"item_text": "A new list item"})
-    // self.assertRedirects(response, "/")
-    val model = DefaultModel(repository = FakeRepo())
-    val states = mutableListOf<State>()
-    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-      model.state.toList(states)
-    }
-    //When
-    model.post("/", Item(text = "A new list item"))
-    //Then
-    states.last().path shouldBe "/lists/the-only-list-in-the-world/"
-  }
-
   @Test
   fun test_can_save_a_POST_request() = runTest {
     val datasource = JvmRoomDatasource(Environment.Test)
@@ -126,7 +112,14 @@ class ModelTests {
     // is less interesting than Edith...
     model.post("/", Item(text = "Buy milk"))
     assertContains(states.last().data, Item("Buy milk"))
-    states.last().data.first() shouldBeEqual Item("Buy milk")
+    "'Buy milk' should be first in the list!".asClue {
+      states.last().data.mapIndexed(::Pair).forOne { (id, it) ->
+        id shouldBe 0; it shouldBe Item("Buy milk")
+      }
+      /*.mapIndexed { id, it ->
+        id == 0 && it == Item("Buy milk")
+      }.forOne { it shouldBe true }*/
+    }
     withClue("Francis gets his own unique URL") {
       states.last().path shouldMatch Regex("/lists/.+")
     }
